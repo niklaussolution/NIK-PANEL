@@ -53,7 +53,8 @@ function CopyBtn({ text }: { text: string }) {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status?: string }) {
+  const s = status ?? "pending";
   const cfg: Record<string, string> = {
     paid:    "bg-green-50 text-green-700 border-green-200",
     pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
@@ -63,9 +64,9 @@ function StatusBadge({ status }: { status: string }) {
     paid: "bg-green-400", pending: "bg-yellow-400", failed: "bg-red-400",
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${cfg[status] ?? cfg.pending}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${dot[status] ?? dot.pending}`} />
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border ${cfg[s] ?? cfg.pending}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${dot[s] ?? dot.pending}`} />
+      {s.charAt(0).toUpperCase() + s.slice(1)}
     </span>
   );
 }
@@ -249,12 +250,43 @@ function OrderRow({ order, onView }: { order: RazorpayOrder; onView: (o: Razorpa
   );
 }
 
+// ── Date helpers ──────────────────────────────────────────────────────────────
+type DateRange = "all" | "today" | "yesterday" | "week" | "month" | "custom";
+
+function getDateBounds(range: DateRange, custom: { from: string; to: string }) {
+  const now = new Date();
+  const startOf = (d: Date) => { d.setHours(0, 0, 0, 0); return d; };
+  const endOf   = (d: Date) => { d.setHours(23, 59, 59, 999); return d; };
+
+  if (range === "today") {
+    return { from: startOf(new Date(now)), to: endOf(new Date(now)) };
+  }
+  if (range === "yesterday") {
+    const y = new Date(now); y.setDate(y.getDate() - 1);
+    return { from: startOf(y), to: endOf(new Date(y)) };
+  }
+  if (range === "week") {
+    const f = new Date(now); f.setDate(f.getDate() - 6);
+    return { from: startOf(f), to: endOf(new Date(now)) };
+  }
+  if (range === "month") {
+    const f = new Date(now); f.setDate(f.getDate() - 29);
+    return { from: startOf(f), to: endOf(new Date(now)) };
+  }
+  if (range === "custom" && custom.from && custom.to) {
+    return { from: startOf(new Date(custom.from)), to: endOf(new Date(custom.to)) };
+  }
+  return null;
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function AdminPaymentsPage() {
   const [orders, setOrders]       = useState<RazorpayOrder[]>([]);
   const [loading, setLoading]     = useState(true);
   const [search, setSearch]       = useState("");
   const [filter, setFilter]       = useState<"all" | "paid" | "pending">("all");
+  const [dateRange, setDateRange] = useState<DateRange>("all");
+  const [customDate, setCustomDate] = useState({ from: "", to: "" });
   const [selected, setSelected]   = useState<RazorpayOrder | null>(null);
   const [showClear, setShowClear] = useState(false);
   const [clearing, setClearing]   = useState(false);
@@ -299,9 +331,15 @@ export default function AdminPaymentsPage() {
   const pending = orders.filter((o) => o.status === "pending");
   const revenue = paid.reduce((s, o) => s + o.amount, 0);
 
+  const bounds = getDateBounds(dateRange, customDate);
+
   const visible = orders.filter((o) => {
     if (filter === "paid"    && o.status !== "paid")    return false;
     if (filter === "pending" && o.status !== "pending") return false;
+    if (bounds) {
+      const t = new Date(o.createdAt).getTime();
+      if (t < bounds.from.getTime() || t > bounds.to.getTime()) return false;
+    }
     if (!search.trim()) return true;
     const s = search.toLowerCase();
     return (
@@ -368,20 +406,59 @@ export default function AdminPaymentsPage() {
         </div>
 
         {/* Filter + Search */}
-        <div className="bg-white rounded-[16px] border border-gray-100 shadow-sm p-4 mb-5 flex flex-col sm:flex-row gap-3">
-          <div className="flex gap-1.5">
-            {(["all", "paid", "pending"] as const).map((f) => (
-              <button key={f} onClick={() => setFilter(f)}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-[8px] transition-colors capitalize ${filter === f ? "bg-[#FF6B00] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
-                {f === "all" ? "All Orders" : f}
+        <div className="bg-white rounded-[16px] border border-gray-100 shadow-sm p-4 mb-5 space-y-3">
+          {/* Row 1 — status + search */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex gap-1.5 flex-wrap">
+              {(["all", "paid", "pending"] as const).map((f) => (
+                <button key={f} onClick={() => setFilter(f)}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-[8px] transition-colors capitalize ${filter === f ? "bg-[#FF6B00] text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                  {f === "all" ? "All Orders" : f}
+                </button>
+              ))}
+            </div>
+            <div className="relative flex-1 min-w-48">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input type="text" placeholder="Search name, email, phone, plan, payment ID, stack…"
+                value={search} onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2 rounded-[10px] border border-gray-200 text-sm focus:outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20" />
+            </div>
+          </div>
+
+          {/* Row 2 — date filter */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-gray-50">
+            <span className="text-xs text-gray-400 font-medium flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5" /> Date:
+            </span>
+            {([
+              { key: "all",       label: "All Time" },
+              { key: "today",     label: "Today" },
+              { key: "yesterday", label: "Yesterday" },
+              { key: "week",      label: "Last 7 Days" },
+              { key: "month",     label: "Last 30 Days" },
+              { key: "custom",    label: "Custom" },
+            ] as { key: DateRange; label: string }[]).map(({ key, label }) => (
+              <button key={key} onClick={() => setDateRange(key)}
+                className={`text-xs font-semibold px-2.5 py-1 rounded-[8px] transition-colors ${dateRange === key ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}>
+                {label}
               </button>
             ))}
-          </div>
-          <div className="relative flex-1 min-w-48">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input type="text" placeholder="Search name, email, phone, plan, payment ID, stack…"
-              value={search} onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2 rounded-[10px] border border-gray-200 text-sm focus:outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20" />
+            {dateRange === "custom" && (
+              <div className="flex items-center gap-2 ml-1">
+                <input type="date" value={customDate.from}
+                  onChange={(e) => setCustomDate((p) => ({ ...p, from: e.target.value }))}
+                  className="text-xs border border-gray-200 rounded-[8px] px-2 py-1 focus:outline-none focus:border-[#FF6B00]" />
+                <span className="text-xs text-gray-400">to</span>
+                <input type="date" value={customDate.to}
+                  onChange={(e) => setCustomDate((p) => ({ ...p, to: e.target.value }))}
+                  className="text-xs border border-gray-200 rounded-[8px] px-2 py-1 focus:outline-none focus:border-[#FF6B00]" />
+              </div>
+            )}
+            {dateRange !== "all" && (
+              <span className="text-xs text-gray-400 ml-auto">
+                {visible.length} result{visible.length !== 1 ? "s" : ""}
+              </span>
+            )}
           </div>
         </div>
 

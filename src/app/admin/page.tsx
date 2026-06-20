@@ -34,7 +34,7 @@ export default function AdminDashboard() {
           getDocs(query(collection(db, "vps"), where("status", "==", "active"))),
           getDocs(collection(db, "tickets")),
         ]);
-        const orders = ordersSnap.docs.map((d) => d.data() as Order);
+        const orders = ordersSnap.docs.map((d) => ({ id: d.id, ...d.data() } as Order));
         const paidOrders = orders.filter((o) => o.status === "paid");
         const revenue = paidOrders.reduce((s, o) => s + o.amount, 0);
         setStats({
@@ -53,10 +53,10 @@ export default function AdminDashboard() {
   }, []);
 
   const statCards: StatCard[] = [
-    { label: "Total Customers", value: stats.users, icon: Users, color: "text-[#0066FF]", bg: "bg-blue-50", trend: "+12%", href: "/admin/users" },
-    { label: "Total Orders", value: stats.orders, icon: ShoppingCart, color: "text-purple-600", bg: "bg-purple-50", trend: "+8%", href: "/admin/orders" },
-    { label: "Revenue", value: `₹${stats.revenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50", trend: "+23%", href: "/admin/orders" },
-    { label: "Active VPS", value: stats.activeVPS, icon: Server, color: "text-[#FF6B00]", bg: "bg-orange-50", trend: "+5%", href: "/admin/vps" },
+    { label: "Total Customers", value: stats.users,                          icon: Users,       color: "text-[#0066FF]",  bg: "bg-blue-50",   href: "/admin/users" },
+    { label: "Total Orders",    value: stats.orders,                         icon: ShoppingCart, color: "text-purple-600", bg: "bg-purple-50", href: "/admin/orders" },
+    { label: "Revenue",         value: `₹${stats.revenue.toLocaleString()}`, icon: DollarSign,  color: "text-green-600",  bg: "bg-green-50",  href: "/admin/orders" },
+    { label: "Active VPS",      value: stats.activeVPS,                      icon: Server,      color: "text-[#FF6B00]",  bg: "bg-orange-50", href: "/admin/vps" },
   ];
 
   return (

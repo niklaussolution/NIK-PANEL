@@ -18,7 +18,7 @@ export default function AdminOrdersPage() {
     setLoading(true);
     try {
       const snap = await getDocs(collection(db, "orders"));
-      const data = snap.docs.map((d) => d.data() as Order);
+      const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Order));
       setOrders(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
     } finally {
       setLoading(false);
