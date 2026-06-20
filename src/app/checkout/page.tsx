@@ -182,8 +182,8 @@ function CheckoutContent() {
         billingCycle:  "Monthly",
         amount:        discountedPrice,
         os:            form.os,
-        couponCode:    couponApplied?.code,
-        couponDiscount: couponApplied?.discount,
+        // Only include coupon fields if a coupon was applied — Firestore rejects undefined
+        ...(couponApplied ? { couponCode: couponApplied.code, couponDiscount: couponApplied.discount } : {}),
         paymentMethod: "UPI",
         paymentStatus: "Pending",
         orderStatus:   "Pending Verification",
