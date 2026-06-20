@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Eye, EyeOff } from "lucide-react";
+import { Server, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useAuth } from "@/context/AuthContext";
@@ -80,6 +80,13 @@ export default function LoginPage() {
           className="bg-white rounded-[20px] border border-gray-100 shadow-card p-8"
         >
           <div className="mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#FF6B00] transition-colors duration-200 mb-4 group"
+            >
+              <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              Back to Home
+            </Link>
             <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
             <p className="text-sm text-gray-500 mt-1">Sign in to your NIKPanel account</p>
           </div>
