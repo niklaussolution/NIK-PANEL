@@ -12,6 +12,7 @@ import { assets } from "@/lib/assets";
 import { clsx } from "clsx";
 
 const navLinks = [
+  { href: "/", label: "Home" },
   { href: "/plans", label: "VPS Plans" },
   { href: "/features", label: "Features" },
   { href: "/plans", label: "Pricing" },

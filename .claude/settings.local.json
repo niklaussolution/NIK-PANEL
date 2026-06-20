@@ -4,7 +4,8 @@
       "Bash(npm run *)",
       "Bash(npm install *)",
       "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match '3939|next dev' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }; \"stopped\")",
-      "PowerShell($end=\\(Get-Date\\).AddSeconds\\(50\\); do { Start-Sleep -Seconds 3; $r=$null; try { $r=Invoke-WebRequest \"http://localhost:3940\" -UseBasicParsing -TimeoutSec 5 } catch {} } until \\($r.StatusCode -eq 200 -or \\(Get-Date\\) -gt $end\\); if\\($r\\){ \"STATUS: $\\($r.StatusCode\\)\"; \"FAQ: $\\($r.Content -match 'Frequently asked'\\)\"; \"DOMAIN: $\\($r.Content -match 'perfect domain'\\)\"; \"PLANS: $\\($r.Content -match 'Recommended'\\)\" } else { \"no response\" })"
+      "PowerShell($end=\\(Get-Date\\).AddSeconds\\(50\\); do { Start-Sleep -Seconds 3; $r=$null; try { $r=Invoke-WebRequest \"http://localhost:3940\" -UseBasicParsing -TimeoutSec 5 } catch {} } until \\($r.StatusCode -eq 200 -or \\(Get-Date\\) -gt $end\\); if\\($r\\){ \"STATUS: $\\($r.StatusCode\\)\"; \"FAQ: $\\($r.Content -match 'Frequently asked'\\)\"; \"DOMAIN: $\\($r.Content -match 'perfect domain'\\)\"; \"PLANS: $\\($r.Content -match 'Recommended'\\)\" } else { \"no response\" })",
+      "Bash(git status *)"
     ]
   }
 }
