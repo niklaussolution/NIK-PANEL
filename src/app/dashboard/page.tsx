@@ -31,14 +31,25 @@ export default function DashboardPage() {
     if (!currentUser) return;
     const fetchData = async () => {
       try {
-        const [vpsSnap, ordersSnap, ticketsSnap] = await Promise.all([
+        const [vpsSnap, ticketsSnap] = await Promise.all([
           getDocs(query(collection(db, "vps"), where("userId", "==", currentUser.uid))),
-          getDocs(query(collection(db, "orders"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5))),
           getDocs(query(collection(db, "tickets"), where("userId", "==", currentUser.uid))),
         ]);
         setVpsList(vpsSnap.docs.map((d) => d.data() as VPS));
-        setOrders(ordersSnap.docs.map((d) => d.data() as Order));
         setTickets(ticketsSnap.docs.map((d) => d.data() as Ticket));
+
+        // orders needs a composite index — fall back to unordered while index is building
+        try {
+          const ordersSnap = await getDocs(
+            query(collection(db, "orders"), where("userId", "==", currentUser.uid), orderBy("createdAt", "desc"), limit(5))
+          );
+          setOrders(ordersSnap.docs.map((d) => d.data() as Order));
+        } catch {
+          const ordersSnap = await getDocs(
+            query(collection(db, "orders"), where("userId", "==", currentUser.uid), limit(5))
+          );
+          setOrders(ordersSnap.docs.map((d) => d.data() as Order));
+        }
       } catch (err) {
         console.error(err);
       } finally {
