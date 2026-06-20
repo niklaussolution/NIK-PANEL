@@ -26,7 +26,7 @@
     "next": "^16.2.9",
     "postcss": "^8.4.49",
     "prop-types": "^15.8.1",
-    "razorpay": "^2.9.5",
+    "razorpay": "^2.9.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.4.1",

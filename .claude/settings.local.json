@@ -5,7 +5,15 @@
       "Bash(npm install *)",
       "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\" | Where-Object { $_.CommandLine -match '3939|next dev' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }; \"stopped\")",
       "PowerShell($end=\\(Get-Date\\).AddSeconds\\(50\\); do { Start-Sleep -Seconds 3; $r=$null; try { $r=Invoke-WebRequest \"http://localhost:3940\" -UseBasicParsing -TimeoutSec 5 } catch {} } until \\($r.StatusCode -eq 200 -or \\(Get-Date\\) -gt $end\\); if\\($r\\){ \"STATUS: $\\($r.StatusCode\\)\"; \"FAQ: $\\($r.Content -match 'Frequently asked'\\)\"; \"DOMAIN: $\\($r.Content -match 'perfect domain'\\)\"; \"PLANS: $\\($r.Content -match 'Recommended'\\)\" } else { \"no response\" })",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "Bash(firebase deploy *)",
+      "Bash(cp \"C:\\\\Users\\\\Ranjith\\\\Downloads\\\\Docker.svg\" \"C:\\\\Users\\\\Ranjith\\\\Desktop\\\\NIK-HOST\\\\public\\\\assets\\\\icons\\\\docker.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\Ranjith\\\\Downloads\\\\Ubuntu.svg\" \"C:\\\\Users\\\\Ranjith\\\\Desktop\\\\NIK-HOST\\\\public\\\\assets\\\\icons\\\\ubuntu.svg\")",
+      "Bash(cp \"C:\\\\Users\\\\Ranjith\\\\Downloads\\\\cyberpanel-icon.svg\" \"C:\\\\Users\\\\Ranjith\\\\Desktop\\\\NIK-HOST\\\\public\\\\assets\\\\icons\\\\cyberpanel.svg\")",
+      "Bash(npx tsc *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
