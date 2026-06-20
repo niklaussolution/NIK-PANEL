@@ -1,6 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Server, Mail, Phone, MapPin } from "lucide-react";
+import Image from "next/image";
+import { Mail, Phone } from "lucide-react";
+import { assets } from "@/lib/assets";
 
 export default function Footer() {
   return (
@@ -9,14 +11,15 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#FF6B00] rounded-[8px] flex items-center justify-center">
-                <Server className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold text-white">
-                NIK<span className="text-[#FF6B00]">Panel</span>
-              </span>
-            </div>
+            <Link href="/">
+              <Image
+                src={assets.icons.logo}
+                alt="Niklaus Solution logo"
+                width={140}
+                height={56}
+                className="h-10 w-auto brightness-0 invert"
+              />
+            </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               High-performance KVM VPS hosting with CyberPanel and Docker pre-installed. Built for developers and businesses.
             </p>
