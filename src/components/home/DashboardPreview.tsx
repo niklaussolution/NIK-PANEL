@@ -2,7 +2,6 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { ComposableMap, Geographies, Geography, Marker, Line } from "react-simple-maps";
 import {
   Globe2,
   Building2,
@@ -107,88 +106,37 @@ export default function DashboardPreview() {
                 All systems operational
               </div>
 
-              <ComposableMap
-                projection="geoMercator"
-                projectionConfig={{ scale: 145, center: [5, 22] }}
-                width={980}
-                height={460}
-                style={{ width: "100%", height: "auto" }}
-              >
-                <Geographies geography={GEO_URL}>
-                  {({ geographies }) =>
-                    geographies.map((geo) => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        fill="#E2E8F0"
-                        stroke="#FFFFFF"
-                        strokeWidth={0.6}
-                        style={{
-                          default: { outline: "none" },
-                          hover: { fill: "#D7DEE8", outline: "none" },
-                          pressed: { outline: "none" },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
+           <div className="h-[460px] flex items-center justify-center bg-gray-100 rounded-2xl">
+  <div className="text-center">
+    <Globe2 className="w-16 h-16 mx-auto text-[#FF6B00] mb-4" />
 
-                {/* flowing connection arcs */}
-                {ARCS.map(([from, to], i) => (
-                  <Line
-                    key={`${from}-${to}`}
-                    from={getLoc(from).coordinates}
-                    to={getLoc(to).coordinates}
-                    stroke="#FF6B00"
-                    strokeWidth={1.5}
-                    strokeOpacity={0.4}
-                    strokeLinecap="round"
-                    strokeDasharray="1 7"
-                    style={{ animation: `arc-flow 0.9s linear ${i * 0.15}s infinite` }}
-                  />
-                ))}
+    <h3 className="text-2xl font-bold text-gray-900">
+      Global Infrastructure Network
+    </h3>
 
-                {/* location markers + flag pills */}
-                {LOCATIONS.map((loc, i) => (
-                  <Marker key={loc.id} coordinates={loc.coordinates}>
-                    {/* pulse ring */}
-                    <circle r={6} fill="none" stroke="#FF6B00" strokeWidth={1.5} opacity={0.5}>
-                      <animate attributeName="r" from="6" to="20" dur="2.2s" begin={`${i * 0.3}s`} repeatCount="indefinite" />
-                      <animate attributeName="opacity" from="0.6" to="0" dur="2.2s" begin={`${i * 0.3}s`} repeatCount="indefinite" />
-                    </circle>
-                    {/* glow + dot */}
-                    <circle r={9} fill="#FF6B00" opacity={0.15} />
-                    <circle r={5} fill="#FF6B00" stroke="#FFFFFF" strokeWidth={2} />
-                    {/* pill */}
-                    <g transform="translate(10,-13)">
-                      <rect
-                        x={0}
-                        y={0}
-                        rx={13}
-                        ry={13}
-                        width={loc.w}
-                        height={26}
-                        fill="#FFFFFF"
-                        stroke="#EEF2F7"
-                      />
-                      <text x={15} y={18} fontSize={14}>{loc.flag}</text>
-                      <text
-                        x={34}
-                        y={17}
-                        style={{
-                          fontFamily: "var(--font-inter), sans-serif",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          fill: "#374151",
-                        }}
-                      >
-                        {loc.label}
-                      </text>
-                    </g>
-                  </Marker>
-                ))}
-              </ComposableMap>
-            </div>
+    <p className="text-gray-500 mt-2">
+      Enterprise-grade VPS infrastructure across multiple regions.
+    </p>
+
+    <div className="flex flex-wrap justify-center gap-3 mt-6">
+      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
+        🇺🇸 Los Angeles
+      </span>
+      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
+        🇺🇸 New York
+      </span>
+      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
+        🇩🇪 Frankfurt
+      </span>
+      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
+        🇮🇳 Mumbai
+      </span>
+      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
+        🇸🇬 Singapore
+      </span>
+    </div>
+  </div>
+</div>
 
             {/* stats strip */}
             <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-gray-100 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
