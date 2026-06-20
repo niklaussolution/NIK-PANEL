@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Check, Lock, RefreshCw } from "lucide-react";
+import { Server, Check, Lock, RefreshCw, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -44,7 +44,7 @@ function CheckoutContent() {
   const { currentUser, userData } = useAuth();
 
   const [plan, setPlan]   = useState<VPSPlan | null>(null);
-  const [form, setForm]   = useState({ fullName: "", email: "", phone: "", hostname: "" });
+  const [form, setForm]   = useState({ fullName: "", email: "", phone: "", os: "CyberPanel" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -78,8 +78,7 @@ function CheckoutContent() {
     if (!form.email.trim())                                e.email    = "Email is required";
     if (!form.phone.trim())                                e.phone    = "Phone number is required";
     else if (!/^\+?[\d\s-]{10,}$/.test(form.phone))       e.phone    = "Enter a valid phone number";
-    if (!form.hostname.trim())                             e.hostname = "Hostname is required";
-    else if (!/^[a-zA-Z0-9-]+$/.test(form.hostname))      e.hostname = "Only letters, numbers, hyphens allowed";
+    if (!form.os)                                          e.os       = "Please select a stack";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -117,7 +116,7 @@ function CheckoutContent() {
         customerName:    form.fullName,
         customerEmail:   form.email,
         customerPhone:   form.phone,
-        hostname:        form.hostname,
+        os:              form.os,
       });
 
       const options: RazorpaySubOptions = {
@@ -133,7 +132,7 @@ function CheckoutContent() {
               planId:          plan?.id,
               planName:        plan?.name,
               amount:          plan?.price,
-              hostname:        form.hostname,
+              os:              form.os,
               customerName:    form.fullName,
               customerEmail:   form.email,
               customerPhone:   form.phone,
@@ -194,8 +193,27 @@ function CheckoutContent() {
                 <Input label="Full Name"       type="text"  placeholder="John Doe"          value={form.fullName} error={errors.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
                 <Input label="Email Address"   type="email" placeholder="john@example.com"  value={form.email}    error={errors.email}    onChange={(e) => setForm({ ...form, email:    e.target.value })} />
                 <Input label="Phone Number"    type="tel"   placeholder="+91 98765 43210"   value={form.phone}    error={errors.phone}    onChange={(e) => setForm({ ...form, phone:    e.target.value })} />
-                <Input label="Server Hostname" type="text"  placeholder="prod-server-01"    value={form.hostname} error={errors.hostname} onChange={(e) => setForm({ ...form, hostname: e.target.value })}
-                  helperText="Letters, numbers, and hyphens only. e.g. my-server-01" />
+                {/* OS / Stack dropdown */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Select Stack
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={form.os}
+                      onChange={(e) => setForm({ ...form, os: e.target.value })}
+                      className="w-full appearance-none rounded-[10px] border border-gray-200 bg-white px-4 py-2.5 pr-10 text-sm text-gray-900 focus:border-[#FF6B00] focus:outline-none focus:ring-2 focus:ring-[#FF6B00]/20 transition-colors"
+                    >
+                      <option value="CyberPanel">CyberPanel</option>
+                      <option value="Docker">Docker</option>
+                      <option value="Ubuntu">Ubuntu</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
+                  {errors.os && (
+                    <p className="mt-1 text-xs text-red-500">{errors.os}</p>
+                  )}
+                </div>
 
                 {!currentUser && (
                   <div className="p-4 bg-orange-50 border border-orange-100 rounded-[12px] text-sm text-[#FF6B00]">
@@ -261,7 +279,7 @@ function CheckoutContent() {
               </div>
 
               <div className="space-y-2 mb-5">
-                {["AlmaLinux 9", "CyberPanel", "Docker", "Full Root Access"].map((item) => (
+                {["AlmaLinux 9", form.os, "Full Root Access", "KVM Virtualization"].map((item) => (
                   <div key={item} className="flex items-center gap-2 text-sm text-gray-600">
                     <div className="w-4 h-4 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0">
                       <Check className="w-2.5 h-2.5 text-[#FF6B00]" />
