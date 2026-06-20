@@ -1,0 +1,79 @@
+<svg width="720" height="460" viewBox="0 0 720 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="dsh" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="18" stdDeviation="26" flood-color="#0F172A" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+  <g filter="url(#dsh)">
+    <rect x="20" y="16" width="680" height="428" rx="18" fill="#fff" stroke="#EAECEF"/>
+    <!-- top bar -->
+    <rect x="20" y="16" width="680" height="48" rx="18" fill="#F9FAFB"/>
+    <rect x="20" y="46" width="680" height="18" fill="#F9FAFB"/>
+    <circle cx="44" cy="40" r="5" fill="#FF6B00"/>
+    <circle cx="62" cy="40" r="5" fill="#FBBF24"/>
+    <circle cx="80" cy="40" r="5" fill="#22C55E"/>
+    <rect x="300" y="33" width="160" height="14" rx="7" fill="#EAECEF"/>
+
+    <!-- sidebar -->
+    <rect x="20" y="64" width="150" height="380" fill="#F9FAFB"/>
+    <rect x="40" y="92" width="110" height="12" rx="6" fill="#FFE0C2"/>
+    <rect x="40" y="124" width="92" height="9" rx="4.5" fill="#D1D5DB"/>
+    <rect x="40" y="150" width="100" height="9" rx="4.5" fill="#D1D5DB"/>
+    <rect x="40" y="176" width="78" height="9" rx="4.5" fill="#D1D5DB"/>
+    <rect x="40" y="202" width="96" height="9" rx="4.5" fill="#D1D5DB"/>
+
+    <!-- stat cards -->
+    <g>
+      <rect x="190" y="92" width="148" height="92" rx="12" fill="#fff" stroke="#EAECEF"/>
+      <rect x="206" y="108" width="50" height="8" rx="4" fill="#9CA3AF"/>
+      <rect x="206" y="126" width="74" height="18" rx="6" fill="#111827"/>
+      <rect x="206" y="158" width="116" height="8" rx="4" fill="#FFF3E8"/>
+      <rect x="206" y="158" width="70" height="8" rx="4" fill="#FF6B00"/>
+    </g>
+    <g>
+      <rect x="352" y="92" width="148" height="92" rx="12" fill="#fff" stroke="#EAECEF"/>
+      <rect x="368" y="108" width="50" height="8" rx="4" fill="#9CA3AF"/>
+      <rect x="368" y="126" width="74" height="18" rx="6" fill="#111827"/>
+      <rect x="368" y="158" width="116" height="8" rx="4" fill="#E6F0FF"/>
+      <rect x="368" y="158" width="44" height="8" rx="4" fill="#0066FF"/>
+    </g>
+    <g>
+      <rect x="514" y="92" width="166" height="92" rx="12" fill="#fff" stroke="#EAECEF"/>
+      <rect x="530" y="108" width="50" height="8" rx="4" fill="#9CA3AF"/>
+      <rect x="530" y="126" width="74" height="18" rx="6" fill="#111827"/>
+      <rect x="530" y="158" width="134" height="8" rx="4" fill="#DCFCE7"/>
+      <rect x="530" y="158" width="120" height="8" rx="4" fill="#22C55E"/>
+    </g>
+
+    <!-- chart -->
+    <rect x="190" y="200" width="310" height="224" rx="12" fill="#fff" stroke="#EAECEF"/>
+    <rect x="206" y="216" width="80" height="10" rx="5" fill="#111827"/>
+    <polyline points="206,392 250,360 294,372 338,320 382,338 426,288 470,300 484,270"
+      fill="none" stroke="#FF6B00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="206,392 250,378 294,384 338,356 382,366 426,338 470,346 484,330"
+      fill="none" stroke="#0066FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+
+    <!-- list panel -->
+    <rect x="514" y="200" width="166" height="224" rx="12" fill="#fff" stroke="#EAECEF"/>
+    <g>
+      <circle cx="538" cy="232" r="9" fill="#DCFCE7"/><circle cx="538" cy="232" r="3.5" fill="#22C55E"/>
+      <rect x="556" y="224" width="90" height="8" rx="4" fill="#374151"/>
+      <rect x="556" y="238" width="60" height="6" rx="3" fill="#D1D5DB"/>
+    </g>
+    <g>
+      <circle cx="538" cy="272" r="9" fill="#DCFCE7"/><circle cx="538" cy="272" r="3.5" fill="#22C55E"/>
+      <rect x="556" y="264" width="90" height="8" rx="4" fill="#374151"/>
+      <rect x="556" y="278" width="50" height="6" rx="3" fill="#D1D5DB"/>
+    </g>
+    <g>
+      <circle cx="538" cy="312" r="9" fill="#FFF3E8"/><circle cx="538" cy="312" r="3.5" fill="#FF6B00"/>
+      <rect x="556" y="304" width="90" height="8" rx="4" fill="#374151"/>
+      <rect x="556" y="318" width="66" height="6" rx="3" fill="#D1D5DB"/>
+    </g>
+    <g>
+      <circle cx="538" cy="352" r="9" fill="#DCFCE7"/><circle cx="538" cy="352" r="3.5" fill="#22C55E"/>
+      <rect x="556" y="344" width="90" height="8" rx="4" fill="#374151"/>
+      <rect x="556" y="358" width="44" height="6" rx="3" fill="#D1D5DB"/>
+    </g>
+  </g>
+</svg>

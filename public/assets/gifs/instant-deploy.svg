@@ -1,0 +1,24 @@
+<svg width="320" height="200" viewBox="0 0 320 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="200" rx="16" fill="#0B1220"/>
+  <rect x="16" y="16" width="288" height="28" rx="8" fill="#111A2B"/>
+  <circle cx="32" cy="30" r="4" fill="#FF6B00"/>
+  <circle cx="46" cy="30" r="4" fill="#FBBF24"/>
+  <circle cx="60" cy="30" r="4" fill="#22C55E"/>
+  <text x="20" y="78" font-family="monospace" font-size="13" fill="#9CA3AF">$ nik deploy --prod</text>
+  <text x="20" y="104" font-family="monospace" font-size="13" fill="#38BDF8">
+    <tspan>→ building image</tspan>
+    <animate attributeName="opacity" values="0;1" dur="0.4s" begin="0.2s" fill="freeze"/>
+  </text>
+  <text x="20" y="130" font-family="monospace" font-size="13" fill="#FF8A3D">
+    <tspan>→ pushing to edge</tspan>
+    <animate attributeName="opacity" values="0;1" dur="0.4s" begin="0.9s" fill="freeze"/>
+  </text>
+  <text x="20" y="156" font-family="monospace" font-size="13" fill="#22C55E">
+    <tspan>✓ live in 1.8s</tspan>
+    <animate attributeName="opacity" values="0;1" dur="0.4s" begin="1.6s" fill="freeze"/>
+  </text>
+  <rect x="20" y="172" width="280" height="8" rx="4" fill="#1F2937" opacity="0.6"/>
+  <rect x="20" y="172" width="0" height="8" rx="4" fill="#FF6B00">
+    <animate attributeName="width" values="0;280" dur="1.8s" begin="0s" repeatCount="indefinite"/>
+  </rect>
+</svg>

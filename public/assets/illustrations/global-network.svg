@@ -1,0 +1,39 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gn" cx="0.5" cy="0.45" r="0.7">
+      <stop offset="0" stop-color="#E6F0FF"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" rx="24" fill="url(#gn)"/>
+  <circle cx="320" cy="180" r="140" fill="none" stroke="#0066FF" stroke-opacity="0.18"/>
+  <circle cx="320" cy="180" r="140" fill="#0066FF" fill-opacity="0.04"/>
+  <ellipse cx="320" cy="180" rx="140" ry="52" fill="none" stroke="#0066FF" stroke-opacity="0.18"/>
+  <ellipse cx="320" cy="180" rx="52" ry="140" fill="none" stroke="#0066FF" stroke-opacity="0.18"/>
+  <line x1="180" y1="180" x2="460" y2="180" stroke="#0066FF" stroke-opacity="0.18"/>
+
+  <!-- connection arcs -->
+  <path d="M210 130 Q320 40 430 130" stroke="#FF6B00" stroke-width="2" fill="none" stroke-dasharray="4 6"/>
+  <path d="M230 250 Q320 320 410 240" stroke="#FF6B00" stroke-width="2" fill="none" stroke-dasharray="4 6"/>
+
+  <!-- nodes -->
+  <g>
+    <circle cx="210" cy="130" r="7" fill="#FF6B00"/>
+    <circle cx="430" cy="130" r="7" fill="#FF6B00"/>
+    <circle cx="230" cy="250" r="7" fill="#0066FF"/>
+    <circle cx="410" cy="240" r="7" fill="#0066FF"/>
+    <circle cx="320" cy="180" r="10" fill="#fff" stroke="#FF6B00" stroke-width="3"/>
+  </g>
+
+  <!-- floating location pins -->
+  <g>
+    <rect x="40" y="60" width="120" height="40" rx="20" fill="#fff" stroke="#EAECEF"/>
+    <circle cx="64" cy="80" r="6" fill="#FF6B00"/>
+    <rect x="80" y="76" width="62" height="8" rx="4" fill="#374151"/>
+  </g>
+  <g>
+    <rect x="480" y="250" width="120" height="40" rx="20" fill="#fff" stroke="#EAECEF"/>
+    <circle cx="504" cy="270" r="6" fill="#0066FF"/>
+    <rect x="520" y="266" width="62" height="8" rx="4" fill="#374151"/>
+  </g>
+</svg>

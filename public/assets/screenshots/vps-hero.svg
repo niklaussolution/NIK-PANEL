@@ -1,0 +1,107 @@
+<svg width="640" height="540" viewBox="0 0 640 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vh-area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF6B00" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#FF6B00" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="vh-win" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="22" stdDeviation="30" flood-color="#0B1220" flood-opacity="0.15"/>
+    </filter>
+    <filter id="vh-card" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#0B1220" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <!-- ===== Main control-panel window ===== -->
+  <g filter="url(#vh-win)">
+    <rect x="60" y="40" width="520" height="372" rx="16" fill="#FFFFFF" stroke="#E8ECF1"/>
+    <!-- title bar -->
+    <path d="M60 56a16 16 0 0 1 16-16h488a16 16 0 0 1 16 16v22H60V56z" fill="#FBFCFE"/>
+    <line x1="60" y1="78" x2="580" y2="78" stroke="#EDF0F4"/>
+    <circle cx="82" cy="59" r="4.5" fill="#E2554B"/>
+    <circle cx="98" cy="59" r="4.5" fill="#E8A93C"/>
+    <circle cx="114" cy="59" r="4.5" fill="#46B27A"/>
+    <rect x="250" y="51" width="140" height="16" rx="8" fill="#F1F4F8"/>
+    <text x="320" y="63" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600" fill="#64748B">nikpanel.com/console</text>
+
+    <!-- panel title -->
+    <rect x="84" y="100" width="14" height="14" rx="4" fill="#FF6B00"/>
+    <rect x="106" y="101" width="120" height="12" rx="6" fill="#0F172A"/>
+    <rect x="494" y="100" width="62" height="20" rx="10" fill="#ECFDF3"/>
+    <circle cx="508" cy="110" r="3.5" fill="#16A34A"/>
+    <text x="520" y="114" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" fill="#16A34A">Running</text>
+
+    <!-- server row -->
+    <rect x="84" y="132" width="472" height="58" rx="12" fill="#F8FAFC" stroke="#EEF2F7"/>
+    <rect x="100" y="148" width="26" height="26" rx="7" fill="#0F172A"/>
+    <rect x="106" y="154" width="14" height="3" rx="1.5" fill="#FF8A3D"/>
+    <rect x="106" y="160" width="14" height="3" rx="1.5" fill="#4D9CFF"/>
+    <rect x="106" y="166" width="9" height="3" rx="1.5" fill="#46B27A"/>
+    <rect x="140" y="150" width="120" height="9" rx="4.5" fill="#1E293B"/>
+    <rect x="140" y="165" width="86" height="7" rx="3.5" fill="#94A3B8"/>
+    <rect x="430" y="150" width="110" height="7" rx="3.5" fill="#CBD5E1"/>
+    <rect x="470" y="164" width="70" height="7" rx="3.5" fill="#CBD5E1"/>
+
+    <!-- gauges -->
+    <g>
+      <rect x="84" y="206" width="150" height="86" rx="12" fill="#FFFFFF" stroke="#E8ECF1"/>
+      <text x="100" y="228" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" fill="#94A3B8">CPU</text>
+      <path d="M120 278 a36 36 0 0 1 72 0" fill="none" stroke="#EEF2F7" stroke-width="9" stroke-linecap="round"/>
+      <path d="M120 278 a36 36 0 0 1 60 -28" fill="none" stroke="#FF6B00" stroke-width="9" stroke-linecap="round"/>
+      <text x="156" y="280" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0F172A">38%</text>
+    </g>
+    <g>
+      <rect x="246" y="206" width="150" height="86" rx="12" fill="#FFFFFF" stroke="#E8ECF1"/>
+      <text x="262" y="228" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" fill="#94A3B8">MEMORY</text>
+      <path d="M282 278 a36 36 0 0 1 72 0" fill="none" stroke="#EEF2F7" stroke-width="9" stroke-linecap="round"/>
+      <path d="M282 278 a36 36 0 0 1 30 -34" fill="none" stroke="#0066FF" stroke-width="9" stroke-linecap="round"/>
+      <text x="318" y="280" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="700" fill="#0F172A">52%</text>
+    </g>
+    <!-- network chart -->
+    <g>
+      <rect x="408" y="206" width="148" height="86" rx="12" fill="#FFFFFF" stroke="#E8ECF1"/>
+      <text x="424" y="228" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" fill="#94A3B8">NETWORK</text>
+      <path d="M424 278 L448 262 L470 270 L492 246 L514 256 L536 238 L544 244 L544 282 L424 282 Z" fill="url(#vh-area)"/>
+      <path d="M424 278 L448 262 L470 270 L492 246 L514 256 L536 238 L544 244"
+        fill="none" stroke="#FF6B00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+
+    <!-- region bar -->
+    <rect x="84" y="308" width="472" height="84" rx="12" fill="#0B1220"/>
+    <text x="100" y="332" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="600" fill="#7C8AA0">GLOBAL REGIONS</text>
+    <g>
+      <circle cx="110" cy="362" r="5" fill="#FF6B00"/><circle cx="160" cy="356" r="5" fill="#0066FF"/>
+      <circle cx="215" cy="368" r="5" fill="#FF6B00"/><circle cx="270" cy="354" r="5" fill="#46B27A"/>
+      <circle cx="330" cy="366" r="5" fill="#0066FF"/><circle cx="390" cy="358" r="5" fill="#FF6B00"/>
+      <circle cx="450" cy="364" r="5" fill="#0066FF"/><circle cx="510" cy="356" r="5" fill="#46B27A"/>
+      <g stroke="#243049" stroke-width="1.5">
+        <line x1="110" y1="362" x2="160" y2="356"/><line x1="160" y1="356" x2="215" y2="368"/>
+        <line x1="215" y1="368" x2="270" y2="354"/><line x1="270" y1="354" x2="330" y2="366"/>
+        <line x1="330" y1="366" x2="390" y2="358"/><line x1="390" y1="358" x2="450" y2="364"/>
+        <line x1="450" y1="364" x2="510" y2="356"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===== Floating terminal card ===== -->
+  <g filter="url(#vh-card)">
+    <rect x="20" y="276" width="220" height="118" rx="14" fill="#0B1220"/>
+    <circle cx="42" cy="298" r="3.5" fill="#E2554B"/>
+    <circle cx="54" cy="298" r="3.5" fill="#E8A93C"/>
+    <circle cx="66" cy="298" r="3.5" fill="#46B27A"/>
+    <text x="38" y="328" font-family="ui-monospace, Menlo, monospace" font-size="11" fill="#7C8AA0">$ nik deploy --vps</text>
+    <text x="38" y="348" font-family="ui-monospace, Menlo, monospace" font-size="11" fill="#4D9CFF">→ provisioning KVM…</text>
+    <text x="38" y="368" font-family="ui-monospace, Menlo, monospace" font-size="11" fill="#46D17F">✓ live in 47s</text>
+  </g>
+
+  <!-- ===== Floating uptime card ===== -->
+  <g filter="url(#vh-card)">
+    <rect x="430" y="392" width="190" height="80" rx="14" fill="#FFFFFF"/>
+    <rect x="448" y="412" width="40" height="40" rx="11" fill="#FFF1E8"/>
+    <path d="M460 432l6 6 12-13" stroke="#FF6B00" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="502" y="426" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="700" fill="#0F172A">99.9% Uptime</text>
+    <text x="502" y="446" font-family="Inter, Arial, sans-serif" font-size="11" fill="#94A3B8">Backed by SLA</text>
+    <rect x="502" y="454" width="92" height="6" rx="3" fill="#FFE7D2"/>
+    <rect x="502" y="454" width="84" height="6" rx="3" fill="#FF6B00"/>
+  </g>
+</svg>

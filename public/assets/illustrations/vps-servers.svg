@@ -1,0 +1,80 @@
+<svg width="620" height="520" viewBox="0 0 620 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="vps-accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF6B00"/>
+      <stop offset="1" stop-color="#0066FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- connection lines between servers -->
+  <g stroke="#CBD5E1" stroke-width="1.5">
+    <line x1="190" y1="260" x2="250" y2="260"/>
+    <line x1="370" y1="260" x2="430" y2="260"/>
+  </g>
+  <circle cx="206" cy="260" r="4" fill="#FF6B00"/>
+  <circle cx="236" cy="260" r="4" fill="#0066FF"/>
+  <circle cx="386" cy="260" r="4" fill="#FF6B00"/>
+  <circle cx="416" cy="260" r="4" fill="#0066FF"/>
+
+  <!-- ===== server tower (reusable look), drawn 3x ===== -->
+  <!-- left -->
+  <g transform="translate(40,150)" stroke="#94A3B8" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M30 10 L150 10 L150 210 L30 210 Z" fill="#FFFFFF"/>
+    <path d="M150 10 L172 28 L172 228 L150 210" fill="#F1F5F9"/>
+    <path d="M30 210 L52 228 L172 228" />
+    <!-- face slots -->
+    <rect x="48" y="34" width="14" height="150" rx="6" fill="#F8FAFC"/>
+    <rect x="78" y="34" width="50" height="150" rx="8" fill="#F8FAFC"/>
+    <!-- vents -->
+    <g stroke="#CBD5E1" stroke-width="1.5">
+      <line x1="100" y1="46" x2="120" y2="46"/>
+      <line x1="100" y1="54" x2="120" y2="54"/>
+      <line x1="100" y1="62" x2="120" y2="62"/>
+    </g>
+    <!-- status leds -->
+    <circle cx="55" cy="158" r="3.5" fill="#FF6B00" stroke="none"/>
+    <circle cx="55" cy="172" r="3.5" fill="#0066FF" stroke="none"/>
+    <!-- power dial -->
+    <circle cx="90" cy="196" r="11" fill="#FFFFFF"/>
+    <circle cx="90" cy="196" r="4" fill="#0066FF" stroke="none"/>
+  </g>
+
+  <!-- center (slightly taller / highlighted) -->
+  <g transform="translate(235,120)" stroke="#64748B" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M30 10 L150 10 L150 250 L30 250 Z" fill="#FFFFFF"/>
+    <path d="M150 10 L172 28 L172 268 L150 250" fill="#EEF2F7"/>
+    <path d="M30 250 L52 268 L172 268" />
+    <rect x="48" y="34" width="14" height="186" rx="6" fill="#F8FAFC"/>
+    <rect x="78" y="34" width="50" height="186" rx="8" fill="#F8FAFC"/>
+    <g stroke="#CBD5E1" stroke-width="1.5">
+      <line x1="100" y1="46" x2="120" y2="46"/>
+      <line x1="100" y1="54" x2="120" y2="54"/>
+      <line x1="100" y1="62" x2="120" y2="62"/>
+    </g>
+    <circle cx="55" cy="194" r="3.5" fill="#FF6B00" stroke="none"/>
+    <circle cx="55" cy="208" r="3.5" fill="#22C55E" stroke="none"/>
+    <circle cx="90" cy="234" r="11" fill="#FFFFFF"/>
+    <circle cx="90" cy="234" r="4" fill="#FF6B00" stroke="none"/>
+  </g>
+
+  <!-- right -->
+  <g transform="translate(430,150)" stroke="#94A3B8" stroke-width="2" fill="none" stroke-linejoin="round">
+    <path d="M30 10 L150 10 L150 210 L30 210 Z" fill="#FFFFFF"/>
+    <path d="M150 10 L172 28 L172 228 L150 210" fill="#F1F5F9"/>
+    <path d="M30 210 L52 228 L172 228" />
+    <rect x="48" y="34" width="14" height="150" rx="6" fill="#F8FAFC"/>
+    <rect x="78" y="34" width="50" height="150" rx="8" fill="#F8FAFC"/>
+    <g stroke="#CBD5E1" stroke-width="1.5">
+      <line x1="100" y1="46" x2="120" y2="46"/>
+      <line x1="100" y1="54" x2="120" y2="54"/>
+      <line x1="100" y1="62" x2="120" y2="62"/>
+    </g>
+    <circle cx="55" cy="158" r="3.5" fill="#0066FF" stroke="none"/>
+    <circle cx="55" cy="172" r="3.5" fill="#FF6B00" stroke="none"/>
+    <circle cx="90" cy="196" r="11" fill="#FFFFFF"/>
+    <circle cx="90" cy="196" r="4" fill="#0066FF" stroke="none"/>
+  </g>
+
+  <!-- accent underline -->
+  <rect x="40" y="430" width="540" height="3" rx="1.5" fill="url(#vps-accent)" opacity="0.25"/>
+</svg>
