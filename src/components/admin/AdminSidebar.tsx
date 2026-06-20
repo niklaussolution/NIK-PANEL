@@ -6,18 +6,19 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
   Package, LogOut, Server as ServerIcon,
-  Menu, X, ChevronRight, Shield,
+  Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 const navItems = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/users", label: "Users", icon: Users },
-  { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
-  { href: "/admin/vps", label: "VPS Management", icon: Server },
-  { href: "/admin/plans", label: "Plans", icon: Package },
+  { href: "/admin",          label: "Dashboard",   icon: LayoutDashboard },
+  { href: "/admin/users",    label: "Users",        icon: Users },
+  { href: "/admin/payments", label: "Payments",     icon: CreditCard },
+  { href: "/admin/orders",   label: "Orders",       icon: ShoppingCart },
+  { href: "/admin/vps",      label: "VPS Mgmt",     icon: Server },
+  { href: "/admin/plans",    label: "Plans",        icon: Package },
 ];
 
 export default function AdminSidebar() {

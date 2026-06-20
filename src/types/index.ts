@@ -99,3 +99,62 @@ export interface AdminStats {
   revenue: number;
   activeVPS: number;
 }
+
+// ── UPI Payment System ────────────────────────────────────────────────────────
+
+export type UPIPaymentStatus = "Pending" | "Under Review" | "Approved" | "Rejected";
+export type UPIOrderStatus   = "Pending Verification" | "Active" | "Cancelled";
+
+export interface UPIPaymentProof {
+  utrNumber: string;
+  screenshotUrl: string;
+  notes?: string;
+  submittedAt: string;
+}
+
+export interface UPIOrder {
+  orderId: string;          // NIK-YYYYMMDD-XXXX  (also the Firestore doc ID)
+  userId: string;
+  userName: string;
+  email: string;
+  phone: string;
+  planId: string;
+  planName: string;
+  planType: string;         // e.g. "VPS"
+  billingCycle: string;     // e.g. "Monthly"
+  amount: number;
+  os: string;               // CyberPanel / Docker / Ubuntu
+  couponCode?: string;
+  couponDiscount?: number;
+  paymentMethod: "UPI";
+  paymentStatus: UPIPaymentStatus;
+  orderStatus: UPIOrderStatus;
+  paymentProof?: UPIPaymentProof;
+  rejectionReason?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UPITransaction {
+  id: string;
+  orderId: string;
+  userId: string;
+  amount: number;
+  utrNumber: string;
+  paymentMethod: "UPI";
+  approvedBy: string;
+  approvedAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  read: boolean;
+  type: "payment_approved" | "payment_rejected" | "info";
+  orderId?: string;
+  createdAt: string;
+}

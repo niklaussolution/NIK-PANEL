@@ -14,17 +14,19 @@ import {
   Menu,
   X,
   ChevronRight,
+  ShoppingCart,
 } from "lucide-react";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/vps", label: "My VPS", icon: Server },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-  { href: "/dashboard/support", label: "Support", icon: LifeBuoy },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard",        label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/orders", label: "Orders",    icon: ShoppingCart },
+  { href: "/dashboard/vps",    label: "My VPS",    icon: Server },
+  { href: "/dashboard/billing",  label: "Billing", icon: CreditCard },
+  { href: "/dashboard/support",  label: "Support", icon: LifeBuoy },
+  { href: "/dashboard/settings", label: "Settings",icon: Settings },
 ];
 
 export default function Sidebar() {

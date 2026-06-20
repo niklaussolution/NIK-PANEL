@@ -20,7 +20,12 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
-    // Subscriptions
+    // Order ID counters — signed-in users can increment
+    match /_counters/{counterId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Subscriptions (Razorpay)
     match /subscriptions/{subId} {
       allow read: if isSignedIn() &&
         (resource.data.userId == request.auth.uid || isAdmin());
@@ -37,12 +42,21 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Orders
+    // Orders (both Razorpay and UPI)
     match /orders/{orderId} {
       allow read: if isSignedIn() &&
         (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isSignedIn();
-      allow update: if isAdmin();
+      // User creates their own order
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == request.auth.uid;
+      // User can update paymentProof only (not status fields); admin can update anything
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.paymentStatus == resource.data.paymentStatus &&
+        request.resource.data.orderStatus == resource.data.orderStatus &&
+        request.resource.data.userId == resource.data.userId
+      );
       allow delete: if isAdmin();
     }
 
@@ -55,12 +69,32 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // Payments
+    // Payments (Razorpay)
     match /payments/{paymentId} {
       allow read: if isSignedIn() &&
         (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isSignedIn();
       allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Transactions (UPI approvals)
+    match /transactions/{transactionId} {
+      allow read: if isSignedIn() &&
+        (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() &&
+        resource.data.userId == request.auth.uid;
+      allow create: if isAdmin();
+      // User can mark their own notification as read
+      allow update: if isSignedIn() &&
+        resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == resource.data.userId;
       allow delete: if isAdmin();
     }
 
