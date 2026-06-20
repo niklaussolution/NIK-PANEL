@@ -22,11 +22,11 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <Mail className="w-4 h-4 text-[#FF6B00]" />
-              <span>support@nikhosting.com</span>
+              <span>niklaussolution@gmail.com</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <Phone className="w-4 h-4 text-[#FF6B00]" />
-              <span>+91 98765 43210</span>
+              <span>+91 8438516533</span>
             </div>
           </div>
 

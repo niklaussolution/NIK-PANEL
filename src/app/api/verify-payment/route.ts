@@ -11,16 +11,19 @@ export async function POST(req: NextRequest) {
       razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
-      orderId,
       userId,
       planId,
       planName,
       amount,
-      hostname,
+      os,
       customerName,
       customerEmail,
       customerPhone,
     } = body;
+
+    if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
+      return NextResponse.json({ error: "Missing payment fields" }, { status: 400 });
+    }
 
     // Verify Razorpay signature
     const expectedSignature = crypto
@@ -38,7 +41,7 @@ export async function POST(req: NextRequest) {
     // Update matching order document
     const ordersQuery = await db
       .collection("orders")
-      .where("razorpayOrderId", "==", orderId)
+      .where("razorpayOrderId", "==", razorpay_order_id)
       .limit(1)
       .get();
 
@@ -54,46 +57,45 @@ export async function POST(req: NextRequest) {
     const paymentRef = db.collection("payments").doc();
     batch.set(paymentRef, {
       id: paymentRef.id,
-      orderId,
       userId,
       razorpayPaymentId: razorpay_payment_id,
       razorpayOrderId: razorpay_order_id,
       razorpaySignature: razorpay_signature,
       amount,
       status: "success",
+      type: "one_time",
       createdAt: new Date().toISOString(),
     });
 
     // Create VPS record
     const vpsRef = db.collection("vps").doc();
-    const oct2 = Math.floor(Math.random() * 254) + 1;
-    const oct3 = Math.floor(Math.random() * 254) + 1;
-    const oct4 = Math.floor(Math.random() * 254) + 1;
-    const ipAddress = `103.${oct2}.${oct3}.${oct4}`;
-
     const planSpecs: Record<string, { cpu: string; ram: string; storage: string }> = {
       starter:      { cpu: "2 vCPU", ram: "2 GB",  storage: "40 GB NVMe SSD"  },
       business:     { cpu: "4 vCPU", ram: "4 GB",  storage: "80 GB NVMe SSD"  },
       professional: { cpu: "6 vCPU", ram: "8 GB",  storage: "160 GB NVMe SSD" },
       enterprise:   { cpu: "8 vCPU", ram: "16 GB", storage: "320 GB NVMe SSD" },
     };
+    const oct2 = Math.floor(Math.random() * 254) + 1;
+    const oct3 = Math.floor(Math.random() * 254) + 1;
+    const oct4 = Math.floor(Math.random() * 254) + 1;
 
     batch.set(vpsRef, {
       id: vpsRef.id,
       userId,
       planId,
-      planName,
-      hostname,
-      ipAddress,
-      status: "active",
+      planName: planName || planId,
+      ipAddress: `103.${oct2}.${oct3}.${oct4}`,
+      status: "provisioning",
       ...(planSpecs[planId] ?? planSpecs.starter),
-      os: "AlmaLinux 9",
+      os: os || "AlmaLinux 9",
       createdAt: new Date().toISOString(),
     });
 
     // Update user record
-    const userRef = db.collection("users").doc(userId);
-    batch.update(userRef, { phone: customerPhone, name: customerName });
+    if (userId) {
+      const userRef = db.collection("users").doc(userId);
+      batch.update(userRef, { phone: customerPhone, name: customerName });
+    }
 
     await batch.commit();
 

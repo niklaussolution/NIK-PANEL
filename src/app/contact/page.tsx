@@ -10,8 +10,8 @@ import { Mail, Phone, Clock, MessageSquare } from "lucide-react";
 import toast from "react-hot-toast";
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "support@nikhosting.com" },
-  { icon: Phone, label: "Phone", value: "+91 98765 43210" },
+  { icon: Mail, label: "Email", value: "niklaussolution@gmail.com" },
+  { icon: Phone, label: "Phone", value: "+91 8438516533" },
   { icon: Clock, label: "Support Hours", value: "24/7 Available" },
   { icon: MessageSquare, label: "Live Chat", value: "Available in Dashboard" },
 ];

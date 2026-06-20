@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Check, Lock, RefreshCw, ChevronDown, Tag, X as XIcon, ArrowLeft } from "lucide-react";
+import { Server, Check, Lock, ShieldCheck, ChevronDown, Tag, X as XIcon, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -18,27 +18,28 @@ import axios from "axios";
 
 declare global {
   interface Window {
-    Razorpay: new (options: RazorpaySubOptions) => RazorpayInstance;
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
   }
 }
-interface RazorpaySubOptions {
+interface RazorpayOptions {
   key: string;
-  subscription_id: string;
+  order_id: string;
+  amount: number;
+  currency: string;
   name: string;
   description: string;
-  handler: (response: RazorpaySubResponse) => void;
+  handler: (response: RazorpayResponse) => void;
   prefill: { name: string; email: string; contact: string };
   theme: { color: string };
   modal: { ondismiss: () => void };
 }
 interface RazorpayInstance { open(): void; }
-interface RazorpaySubResponse {
+interface RazorpayResponse {
   razorpay_payment_id: string;
-  razorpay_subscription_id: string;
+  razorpay_order_id: string;
   razorpay_signature: string;
 }
 
-// ── Real SVG logos for each stack ────────────────────────────────────────────
 const STACKS = [
   {
     value: "CyberPanel",
@@ -158,7 +159,6 @@ function CheckoutContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  // Coupon state
   const [couponInput, setCouponInput] = useState("");
   const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
@@ -249,40 +249,45 @@ function CheckoutContent() {
       const loaded = await loadRazorpay();
       if (!loaded) throw new Error("Payment gateway failed to load");
 
-      const { data } = await axios.post("/api/create-subscription", {
+      // Step 1 — create Razorpay order on the server
+      const { data } = await axios.post("/api/create-order", {
         planId:          plan?.id,
         planName:        plan?.name,
         amount:          discountedPrice,
-        couponCode:      couponApplied?.code,
-        couponDiscount:  couponApplied?.discount,
         userId:          currentUser.uid,
         customerName:    form.fullName,
         customerEmail:   form.email,
         customerPhone:   form.phone,
         os:              form.os,
+        couponCode:      couponApplied?.code,
+        couponDiscount:  couponApplied?.discount,
       });
 
-      const options: RazorpaySubOptions = {
-        key:             process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
-        subscription_id: data.subscriptionId,
-        name:            "NIKPanel",
-        description:     `${plan?.name} — ₹${discountedPrice}/month (Auto-renewed)`,
-        handler: async (response: RazorpaySubResponse) => {
+      // Step 2 — open Razorpay Standard Checkout modal
+      const options: RazorpayOptions = {
+        key:         process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        order_id:    data.orderId,
+        amount:      data.amount,
+        currency:    data.currency || "INR",
+        name:        "NIKPanel",
+        description: `${plan?.name} VPS`,
+        handler: async (response: RazorpayResponse) => {
+          // Step 3 — verify signature on the server
           try {
-            await axios.post("/api/verify-subscription", {
-              ...response,
-              userId:          currentUser.uid,
-              planId:          plan?.id,
-              planName:        plan?.name,
-              amount:          discountedPrice,
-              couponCode:      couponApplied?.code,
-              couponDiscount:  couponApplied?.discount,
-              os:              form.os,
-              customerName:    form.fullName,
-              customerEmail:   form.email,
-              customerPhone:   form.phone,
+            await axios.post("/api/verify-payment", {
+              razorpay_payment_id:  response.razorpay_payment_id,
+              razorpay_order_id:    response.razorpay_order_id,
+              razorpay_signature:   response.razorpay_signature,
+              userId:               currentUser.uid,
+              planId:               plan?.id,
+              planName:             plan?.name,
+              amount:               discountedPrice,
+              os:                   form.os,
+              customerName:         form.fullName,
+              customerEmail:        form.email,
+              customerPhone:        form.phone,
             });
-            toast.success("🎉 Payment successful! Your VPS is being provisioned.");
+            toast.success("Payment successful! Your VPS is being provisioned.");
             router.push("/dashboard/vps");
           } catch {
             toast.error("Payment verification failed. Please contact support.");
@@ -295,8 +300,9 @@ function CheckoutContent() {
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch {
-      toast.error("Failed to initiate payment. Please try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to initiate payment";
+      toast.error(msg);
       setLoading(false);
     }
   };
@@ -341,7 +347,7 @@ function CheckoutContent() {
           >
             <div className="bg-white rounded-[20px] border border-gray-100 shadow-card p-8">
               <h1 className="text-xl font-bold text-gray-900 mb-2">Your Information</h1>
-              <p className="text-sm text-gray-400 mb-6">You'll be charged ₹{plan.price}/month automatically via UPI, card, or netbanking.</p>
+              <p className="text-sm text-gray-400 mb-6">Complete your purchase securely via Razorpay.</p>
 
               <form onSubmit={handleCheckout} className="space-y-4">
                 <Input label="Full Name"     type="text"  placeholder="John Doe"         value={form.fullName} error={errors.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} />
@@ -381,7 +387,7 @@ function CheckoutContent() {
                   {couponError   && <p className="mt-1 text-xs text-red-500">{couponError}</p>}
                   {couponApplied && (
                     <p className="mt-1 text-xs text-green-600 font-medium">
-                      ✓ {couponApplied.discount}% discount applied — saving ₹{((plan?.price ?? 0) - discountedPrice).toLocaleString("en-IN")}/month
+                      ✓ {couponApplied.discount}% discount applied — saving ₹{((plan?.price ?? 0) - discountedPrice).toLocaleString("en-IN")}
                     </p>
                   )}
                 </div>
@@ -393,25 +399,13 @@ function CheckoutContent() {
                   </div>
                 )}
 
-                <div className="p-4 bg-blue-50 border border-blue-100 rounded-[12px]">
-                  <div className="flex items-start gap-3">
-                    <RefreshCw className="w-4 h-4 text-[#0066FF] mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-gray-800">Monthly Auto-Pay enabled</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        ₹{discountedPrice.toLocaleString("en-IN")} will be auto-debited every month. You can cancel anytime from your dashboard. No hidden charges.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
                 <div className="flex items-center gap-2 text-xs text-gray-400 pt-1">
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Payments secured by Razorpay. UPI AutoPay / Card / Netbanking supported.</span>
+                  <span>Payments secured by Razorpay. UPI / Card / Netbanking supported.</span>
                 </div>
 
                 <Button type="submit" size="lg" loading={loading} className="w-full mt-2">
-                  {loading ? "Processing..." : `Subscribe — ₹${discountedPrice.toLocaleString("en-IN")}/month`}
+                  {loading ? "Processing..." : `Pay ₹${discountedPrice.toLocaleString("en-IN")}`}
                 </Button>
               </form>
             </div>
@@ -429,7 +423,7 @@ function CheckoutContent() {
                 <div className="flex items-start justify-between gap-2 mb-4">
                   <div>
                     <p className="font-semibold text-gray-900">{plan.name}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Monthly subscription</p>
+                    <p className="text-xs text-gray-400 mt-0.5">One-time purchase</p>
                   </div>
                   {plan.popular && (
                     <span className="text-xs bg-orange-100 text-[#FF6B00] font-medium px-2 py-0.5 rounded-full flex-shrink-0">Popular</span>
@@ -473,24 +467,13 @@ function CheckoutContent() {
                   </>
                 )}
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Monthly total</span>
+                  <span className="text-sm text-gray-500">Total</span>
                   <span className="text-2xl font-bold text-gray-900">₹{discountedPrice.toLocaleString("en-IN")}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-400">Billed every month</span>
-                  <span className="text-xs text-green-600 font-medium">Cancel anytime</span>
-                </div>
               </div>
 
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-[10px] flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-[#0066FF] flex-shrink-0" />
-                <span className="text-xs text-blue-700 font-medium">Auto-renewed monthly via Razorpay</span>
-              </div>
-
-              <div className="mt-3 p-3 bg-green-50 rounded-[10px] flex items-center gap-2">
-                <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Check className="w-3 h-3 text-green-600" />
-                </div>
+              <div className="mt-4 p-3 bg-green-50 rounded-[10px] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-xs text-green-700 font-medium">Instant provisioning after payment</span>
               </div>
             </div>
