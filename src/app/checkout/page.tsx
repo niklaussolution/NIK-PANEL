@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Server, Check, Lock, RefreshCw, ChevronDown } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -37,47 +38,41 @@ interface RazorpaySubResponse {
   razorpay_signature: string;
 }
 
-// ── Inline SVG logos for each stack ──────────────────────────────────────────
-const CyberPanelLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#1A9B6C"/>
-    <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C23.18 32 26.07 30.79 28.24 28.8L25.42 25.98C23.97 27.24 22.07 28 20 28C15.582 28 12 24.418 12 20C12 15.582 15.582 12 20 12C22.07 12 23.97 12.76 25.42 14.02L28.24 11.2C26.07 9.21 23.18 8 20 8Z" fill="white"/>
-    <path d="M28 20C28 21.6 27.55 23.1 26.77 24.37L29.63 27.23C31.1 25.18 32 22.69 32 20C32 17.31 31.1 14.82 29.63 12.77L26.77 15.63C27.55 16.9 28 18.4 28 20Z" fill="#A8EDD3"/>
-  </svg>
-);
-
-const DockerLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#1D63ED"/>
-    <path d="M9 19H13V23H9V19Z" fill="white"/>
-    <path d="M14 19H18V23H14V19Z" fill="white"/>
-    <path d="M19 19H23V23H19V19Z" fill="white"/>
-    <path d="M14 14H18V18H14V14Z" fill="white"/>
-    <path d="M19 14H23V18H19V14Z" fill="white"/>
-    <path d="M19 9H23V13H19V9Z" fill="white"/>
-    <path d="M24 19H28V23H24V19Z" fill="white"/>
-    <path d="M31 20.5C30.5 20.2 29.7 19.9 28.9 19.9C28.7 18.6 27.9 17.5 26.7 17L26 16.7L25.7 17.4C25.3 18.3 25.3 19.4 25.7 20.3C25.3 20.5 24.8 20.8 24.2 21H8.8C8.4 22.1 8.5 23.4 9 24.5C9.6 25.7 10.7 26.6 12 27C13.3 27.4 14.7 27.6 16 27.6C18.5 27.6 20.9 27 22.8 25.8C24.3 24.9 25.5 23.5 26.1 21.9C27.2 21.9 28.5 21.5 29.3 20.7L31 20.5Z" fill="white"/>
-  </svg>
-);
-
-const UbuntuLogo = () => (
-  <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="8" fill="#E95420"/>
-    <circle cx="20" cy="20" r="11" stroke="white" strokeWidth="2.5" fill="none"/>
-    <circle cx="20" cy="9.5" r="2.5" fill="white"/>
-    <circle cx="10.6" cy="25.25" r="2.5" fill="white"/>
-    <circle cx="29.4" cy="25.25" r="2.5" fill="white"/>
-    <path d="M20 12V20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M13.1 23.5L20 20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-    <path d="M26.9 23.5L20 20" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-);
-
+// ── Real SVG logos for each stack ────────────────────────────────────────────
 const STACKS = [
-  { value: "CyberPanel", label: "CyberPanel", desc: "Web hosting control panel", Logo: CyberPanelLogo },
-  { value: "Docker",     label: "Docker",     desc: "Container runtime",         Logo: DockerLogo     },
-  { value: "Ubuntu",     label: "Ubuntu",     desc: "Clean Ubuntu 22.04 LTS",   Logo: UbuntuLogo     },
+  {
+    value: "CyberPanel",
+    label: "CyberPanel",
+    desc: "Web hosting control panel",
+    logo: "/assets/icons/cyberpanel.svg",
+    bg: "#0d6b3f",
+  },
+  {
+    value: "Docker",
+    label: "Docker",
+    desc: "Container runtime",
+    logo: "/assets/icons/docker.svg",
+    bg: "#f0f8ff",
+  },
+  {
+    value: "Ubuntu",
+    label: "Ubuntu",
+    desc: "Clean Ubuntu 22.04 LTS",
+    logo: "/assets/icons/ubuntu.svg",
+    bg: "#fff3ee",
+  },
 ];
+
+function StackLogo({ logo, bg, label }: { logo: string; bg: string; label: string }) {
+  return (
+    <span
+      className="w-8 h-8 rounded-[8px] flex items-center justify-center shrink-0 overflow-hidden"
+      style={{ backgroundColor: bg }}
+    >
+      <Image src={logo} alt={label} width={22} height={22} className="object-contain" />
+    </span>
+  );
+}
 
 function StackDropdown({ value, onChange, error }: {
   value: string;
@@ -113,11 +108,11 @@ function StackDropdown({ value, onChange, error }: {
           }`}
         >
           <span className="flex items-center gap-3">
-            <selected.Logo />
+            <StackLogo logo={selected.logo} bg={selected.bg} label={selected.label} />
             <span className="font-medium">{selected.label}</span>
-            <span className="text-gray-400 text-xs">{selected.desc}</span>
+            <span className="text-gray-400 text-xs hidden sm:inline">{selected.desc}</span>
           </span>
-          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0 ${open ? "rotate-180" : ""}`} />
         </button>
 
         {/* Options panel */}
@@ -130,17 +125,19 @@ function StackDropdown({ value, onChange, error }: {
                 onClick={() => { onChange(stack.value); setOpen(false); }}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 text-left text-sm transition-colors duration-150 ${
                   stack.value === value
-                    ? "bg-orange-50 text-[#FF6B00]"
+                    ? "bg-orange-50"
                     : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
-                <stack.Logo />
-                <span className="flex flex-col">
-                  <span className="font-semibold leading-tight">{stack.label}</span>
+                <StackLogo logo={stack.logo} bg={stack.bg} label={stack.label} />
+                <span className="flex flex-col flex-1">
+                  <span className={`font-semibold leading-tight ${stack.value === value ? "text-[#FF6B00]" : "text-gray-900"}`}>
+                    {stack.label}
+                  </span>
                   <span className="text-xs text-gray-400">{stack.desc}</span>
                 </span>
                 {stack.value === value && (
-                  <Check className="w-4 h-4 text-[#FF6B00] ml-auto shrink-0" />
+                  <Check className="w-4 h-4 text-[#FF6B00] shrink-0" />
                 )}
               </button>
             ))}
