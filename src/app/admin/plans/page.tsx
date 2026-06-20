@@ -56,33 +56,65 @@ function PlanForm({
 
       {/* Toggles */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-[12px]">
+        {/* Popular */}
+        <button
+          type="button"
+          onClick={() => set("popular", !value.popular)}
+          className={`flex items-center justify-between p-3 rounded-[12px] border transition-colors duration-200 text-left ${
+            value.popular
+              ? "bg-orange-50 border-orange-200"
+              : "bg-gray-50 border-gray-100 hover:border-gray-200"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 text-yellow-500" />
-            <span className="text-sm font-medium text-gray-700">Popular</span>
+            <Star className={`w-4 h-4 ${value.popular ? "text-[#FF6B00]" : "text-gray-400"}`} />
+            <span className={`text-sm font-medium ${value.popular ? "text-[#FF6B00]" : "text-gray-600"}`}>
+              Popular
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={() => set("popular", !value.popular)}
-            className={`relative w-10 h-5 rounded-full transition-colors duration-200 ${value.popular ? "bg-[#FF6B00]" : "bg-gray-300"}`}
+          {/* Toggle pill */}
+          <span
+            className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ${
+              value.popular ? "bg-[#FF6B00]" : "bg-gray-200"
+            }`}
           >
-            <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${value.popular ? "translate-x-5" : "translate-x-0.5"}`} />
-          </button>
-        </div>
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md ring-0 transition-transform duration-200 ${
+                value.popular ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </span>
+        </button>
 
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-[12px]">
+        {/* Hidden */}
+        <button
+          type="button"
+          onClick={() => set("disabled", !value.disabled)}
+          className={`flex items-center justify-between p-3 rounded-[12px] border transition-colors duration-200 text-left ${
+            value.disabled
+              ? "bg-red-50 border-red-200"
+              : "bg-gray-50 border-gray-100 hover:border-gray-200"
+          }`}
+        >
           <div className="flex items-center gap-2">
-            <EyeOff className="w-4 h-4 text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">Hidden</span>
+            <EyeOff className={`w-4 h-4 ${value.disabled ? "text-red-500" : "text-gray-400"}`} />
+            <span className={`text-sm font-medium ${value.disabled ? "text-red-500" : "text-gray-600"}`}>
+              Hidden
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={() => set("disabled", !value.disabled)}
-            className={`relative w-10 h-5 rounded-full transition-colors duration-200 ${value.disabled ? "bg-red-500" : "bg-gray-300"}`}
+          {/* Toggle pill */}
+          <span
+            className={`relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ${
+              value.disabled ? "bg-red-500" : "bg-gray-200"
+            }`}
           >
-            <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${value.disabled ? "translate-x-5" : "translate-x-0.5"}`} />
-          </button>
-        </div>
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-md ring-0 transition-transform duration-200 ${
+                value.disabled ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </span>
+        </button>
       </div>
 
       {/* Coupon code section */}
