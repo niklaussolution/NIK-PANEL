@@ -98,46 +98,39 @@ export default function DashboardPreview() {
 
         {/* Map card */}
         <Reveal delay={0.1} className="mt-12">
-          <div className="rounded-3xl border border-gray-200 bg-white shadow-card-hover overflow-hidden">
-            <div className="relative">
-              {/* status badge */}
-              <div className="absolute top-5 left-5 z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm text-xs font-medium text-gray-700">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                All systems operational
-              </div>
+  <div className="rounded-3xl border border-gray-200 bg-white shadow-card-hover overflow-hidden">
+    <div className="relative">
 
-           <div className="h-[460px] flex items-center justify-center bg-gray-100 rounded-2xl">
-  <div className="text-center">
-    <Globe2 className="w-16 h-16 mx-auto text-[#FF6B00] mb-4" />
+      <div className="absolute top-5 left-5 z-10 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-gray-100 shadow-sm text-xs font-medium text-gray-700">
+        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+        All systems operational
+      </div>
 
-    <h3 className="text-2xl font-bold text-gray-900">
-      Global Infrastructure Network
-    </h3>
+      <div className="h-[460px] flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <Globe2 className="w-16 h-16 mx-auto text-[#FF6B00] mb-4" />
 
-    <p className="text-gray-500 mt-2">
-      Enterprise-grade VPS infrastructure across multiple regions.
-    </p>
+          <h3 className="text-2xl font-bold text-gray-900">
+            Global Infrastructure Network
+          </h3>
 
-    <div className="flex flex-wrap justify-center gap-3 mt-6">
-      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
-        🇺🇸 Los Angeles
-      </span>
-      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
-        🇺🇸 New York
-      </span>
-      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
-        🇩🇪 Frankfurt
-      </span>
-      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
-        🇮🇳 Mumbai
-      </span>
-      <span className="px-4 py-2 bg-white rounded-full border text-sm font-medium">
-        🇸🇬 Singapore
-      </span>
+          <p className="text-gray-500 mt-2">
+            Enterprise-grade VPS infrastructure across multiple regions.
+          </p>
+
+          <div className="flex flex-wrap justify-center gap-3 mt-6">
+            <span className="px-4 py-2 bg-white rounded-full border">🇺🇸 Los Angeles</span>
+            <span className="px-4 py-2 bg-white rounded-full border">🇺🇸 New York</span>
+            <span className="px-4 py-2 bg-white rounded-full border">🇩🇪 Frankfurt</span>
+            <span className="px-4 py-2 bg-white rounded-full border">🇮🇳 Mumbai</span>
+            <span className="px-4 py-2 bg-white rounded-full border">🇸🇬 Singapore</span>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </div>
-</div>
 
+    {/* stats strip */}
             {/* stats strip */}
             <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-gray-100 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
               {stats.map((s, i) => (
