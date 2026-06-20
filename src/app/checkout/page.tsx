@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Check, Lock, RefreshCw, ChevronDown, Tag, X as XIcon } from "lucide-react";
+import { Server, Check, Lock, RefreshCw, ChevronDown, Tag, X as XIcon, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -316,15 +316,24 @@ function CheckoutContent() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#FF6B00] rounded-[8px] flex items-center justify-center">
-              <Server className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-base font-bold text-gray-900">NIK<span className="text-[#FF6B00]">Panel</span></span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-[#FF6B00] rounded-[8px] flex items-center justify-center">
+                <Server className="w-4 h-4 text-white" />
+              </div>
+              <span className="text-base font-bold text-gray-900">NIK<span className="text-[#FF6B00]">Panel</span></span>
+            </Link>
+            <span className="text-gray-300">/</span>
+            <span className="text-sm text-gray-500">Checkout</span>
+          </div>
+          <Link
+            href="/plans"
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#FF6B00] transition-colors duration-200 group"
+          >
+            <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+            Back to Plans
           </Link>
-          <span className="text-gray-300">/</span>
-          <span className="text-sm text-gray-500">Checkout</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
