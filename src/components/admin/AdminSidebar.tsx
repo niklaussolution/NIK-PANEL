@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
-  Package, LifeBuoy, LogOut, Server as ServerIcon,
+  Package, LogOut, Server as ServerIcon,
   Menu, X, ChevronRight, Shield,
 } from "lucide-react";
 import { clsx } from "clsx";
@@ -18,7 +18,6 @@ const navItems = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/vps", label: "VPS Management", icon: Server },
   { href: "/admin/plans", label: "Plans", icon: Package },
-  { href: "/admin/tickets", label: "Tickets", icon: LifeBuoy },
 ];
 
 export default function AdminSidebar() {

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Check, Lock, RefreshCw, ChevronDown } from "lucide-react";
+import { Server, Check, Lock, RefreshCw, ChevronDown, Tag, X as XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -160,6 +160,12 @@ function CheckoutContent() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [couponApplied, setCouponApplied] = useState<{ code: string; discount: number } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
   // Fetch live plan from Firestore
   useEffect(() => {
     const fetchPlan = async () => {
@@ -195,6 +201,33 @@ function CheckoutContent() {
     return Object.keys(e).length === 0;
   };
 
+  const discountedPrice = couponApplied
+    ? Math.round((plan?.price ?? 0) * (1 - couponApplied.discount / 100))
+    : (plan?.price ?? 0);
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim() || !planId) return;
+    setCouponLoading(true);
+    setCouponError("");
+    try {
+      const snap = await getDoc(doc(db, "plans", planId));
+      if (!snap.exists()) { setCouponError("Plan not found"); return; }
+      const data = snap.data();
+      const code = (data?.couponCode ?? "") as string;
+      const discount = Number(data?.couponDiscount ?? 0);
+      if (code && discount > 0 && code.toUpperCase() === couponInput.trim().toUpperCase()) {
+        setCouponApplied({ code: code.toUpperCase(), discount });
+        toast.success(`${discount}% discount applied!`);
+      } else {
+        setCouponError("Invalid coupon code");
+      }
+    } catch {
+      setCouponError("Failed to validate coupon");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
   const loadRazorpay = () =>
     new Promise<boolean>((resolve) => {
       if (window.Razorpay) return resolve(true);
@@ -223,7 +256,9 @@ function CheckoutContent() {
       const { data } = await axios.post("/api/create-subscription", {
         planId:          plan?.id,
         planName:        plan?.name,
-        amount:          plan?.price,
+        amount:          discountedPrice,
+        couponCode:      couponApplied?.code,
+        couponDiscount:  couponApplied?.discount,
         userId:          currentUser.uid,
         customerName:    form.fullName,
         customerEmail:   form.email,
@@ -235,7 +270,7 @@ function CheckoutContent() {
         key:             process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
         subscription_id: data.subscriptionId,
         name:            "NIKPanel",
-        description:     `${plan?.name} — ₹${plan?.price}/month (Auto-renewed)`,
+        description:     `${plan?.name} — ₹${discountedPrice}/month (Auto-renewed)`,
         handler: async (response: RazorpaySubResponse) => {
           try {
             await axios.post("/api/verify-subscription", {
@@ -243,7 +278,9 @@ function CheckoutContent() {
               userId:          currentUser.uid,
               planId:          plan?.id,
               planName:        plan?.name,
-              amount:          plan?.price,
+              amount:          discountedPrice,
+              couponCode:      couponApplied?.code,
+              couponDiscount:  couponApplied?.discount,
               os:              form.os,
               customerName:    form.fullName,
               customerEmail:   form.email,
@@ -311,6 +348,57 @@ function CheckoutContent() {
                   error={errors.os}
                 />
 
+                {/* Coupon code */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Coupon Code <span className="text-gray-400 font-normal">(optional)</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Enter coupon code"
+                        value={couponInput}
+                        disabled={!!couponApplied}
+                        onChange={(e) => {
+                          setCouponInput(e.target.value.toUpperCase());
+                          setCouponError("");
+                        }}
+                        className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border border-gray-200 text-sm focus:outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20 disabled:bg-gray-50 disabled:text-gray-500"
+                      />
+                    </div>
+                    {couponApplied ? (
+                      <button
+                        type="button"
+                        onClick={() => { setCouponApplied(null); setCouponInput(""); }}
+                        className="px-3.5 py-2 text-sm text-red-500 border border-red-200 rounded-[10px] hover:bg-red-50 transition-colors flex items-center gap-1"
+                      >
+                        <XIcon className="w-3.5 h-3.5" />
+                        Remove
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleApplyCoupon}
+                        disabled={!couponInput.trim() || couponLoading}
+                        className="px-4 py-2 text-sm font-semibold bg-gray-900 text-white rounded-[10px] hover:bg-gray-700 transition-colors disabled:opacity-40 shrink-0"
+                      >
+                        {couponLoading ? "..." : "Apply"}
+                      </button>
+                    )}
+                  </div>
+                  {couponError && (
+                    <p className="mt-1 text-xs text-red-500">{couponError}</p>
+                  )}
+                  {couponApplied && (
+                    <p className="mt-1 text-xs text-green-600 font-medium">
+                      ✓ {couponApplied.discount}% discount applied — saving ₹
+                      {((plan?.price ?? 0) - discountedPrice).toLocaleString("en-IN")}/month
+                    </p>
+                  )}
+                </div>
+
                 {!currentUser && (
                   <div className="p-4 bg-orange-50 border border-orange-100 rounded-[12px] text-sm text-[#FF6B00]">
                     <Link href="/login" className="font-semibold underline">Log in</Link> or{" "}
@@ -325,7 +413,7 @@ function CheckoutContent() {
                     <div>
                       <p className="text-sm font-semibold text-gray-800">Monthly Auto-Pay enabled</p>
                       <p className="text-xs text-gray-500 mt-0.5">
-                        ₹{plan.price} will be auto-debited every month. You can cancel anytime from your dashboard. No hidden charges.
+                        ₹{discountedPrice.toLocaleString("en-IN")} will be auto-debited every month. You can cancel anytime from your dashboard. No hidden charges.
                       </p>
                     </div>
                   </div>
@@ -337,7 +425,7 @@ function CheckoutContent() {
                 </div>
 
                 <Button type="submit" size="lg" loading={loading} className="w-full mt-2">
-                  {loading ? "Processing..." : `Subscribe — ₹${plan.price}/month`}
+                  {loading ? "Processing..." : `Subscribe — ₹${discountedPrice.toLocaleString("en-IN")}/month`}
                 </Button>
               </form>
             </div>
@@ -386,9 +474,29 @@ function CheckoutContent() {
               </div>
 
               <div className="border-t border-gray-100 pt-4 space-y-2">
+                {couponApplied && (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-400 line-through">₹{plan.price.toLocaleString("en-IN")}</span>
+                      <span className="text-xs text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full">
+                        -{couponApplied.discount}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-green-600 flex items-center gap-1">
+                        <Tag className="w-3 h-3" /> {couponApplied.code}
+                      </span>
+                      <span className="text-xs text-green-600 font-semibold">
+                        -₹{((plan.price) - discountedPrice).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  </>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Monthly total</span>
-                  <span className="text-2xl font-bold text-gray-900">₹{plan.price}</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    ₹{discountedPrice.toLocaleString("en-IN")}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-400">Billed every month</span>

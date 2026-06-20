@@ -16,6 +16,9 @@ export interface VPSPlan {
   bandwidth: string;
   price: number;
   popular?: boolean;
+  disabled?: boolean;
+  couponCode?: string;
+  couponDiscount?: number;
 }
 
 export interface VPS {

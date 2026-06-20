@@ -60,7 +60,15 @@ const STATIC_META: Record<string, { tagline: string; features: string[]; recomme
   },
 };
 
-function buildPlans(prices: Record<string, number> | null, popular: Record<string, boolean> | null): PlanDisplay[] {
+const FALLBACK_META = {
+  tagline: "High-performance VPS hosting",
+  features: ["Free SSL certificate", "24/7 support", "Full root access"],
+  recommended: false,
+};
+
+const CANONICAL_ORDER = ["starter", "professional", "enterprise"];
+
+function buildStaticPlans(): PlanDisplay[] {
   return VPS_PLANS.map((p) => ({
     id: p.id,
     name: p.name,
@@ -68,11 +76,8 @@ function buildPlans(prices: Record<string, number> | null, popular: Record<strin
     ram: p.ram,
     storage: p.storage,
     bandwidth: p.bandwidth,
-    ...STATIC_META[p.id],
-    price: prices ? (prices[p.id] ?? p.price) : null,
-    recommended: popular
-      ? (popular[p.id] ?? STATIC_META[p.id]?.recommended ?? false)
-      : (STATIC_META[p.id]?.recommended ?? false),
+    price: p.price,
+    ...(STATIC_META[p.id] ?? FALLBACK_META),
   }));
 }
 
@@ -88,25 +93,48 @@ const INCLUDED = [
 ];
 
 export default function PlansPage() {
-  const [plans, setPlans] = useState<PlanDisplay[]>(buildPlans(null, null));
+  const [plans, setPlans] = useState<PlanDisplay[]>(
+    VPS_PLANS.map((p) => ({ id: p.id, name: p.name, cpu: p.cpu, ram: p.ram, storage: p.storage, bandwidth: p.bandwidth, price: null, ...(STATIC_META[p.id] ?? FALLBACK_META) }))
+  );
 
   useEffect(() => {
     getDocs(collection(db, "plans"))
       .then((snap) => {
         if (snap.empty) {
-          setPlans(buildPlans({}, {}));
+          setPlans(buildStaticPlans());
           return;
         }
-        const prices: Record<string, number> = {};
-        const popular: Record<string, boolean> = {};
-        snap.docs.forEach((d) => {
-          const data = d.data();
-          if (typeof data.price === "number") prices[d.id] = data.price;
-          if (typeof data.popular === "boolean") popular[d.id] = data.popular;
+        const raw = snap.docs.map((d) => ({ id: d.id, ...d.data() } as import("@/types").VPSPlan));
+        // Filter disabled, sort canonical first
+        const active = raw
+          .filter((p) => !p.disabled)
+          .sort((a, b) => {
+            const ai = CANONICAL_ORDER.indexOf(a.id);
+            const bi = CANONICAL_ORDER.indexOf(b.id);
+            if (ai >= 0 && bi >= 0) return ai - bi;
+            if (ai >= 0) return -1;
+            if (bi >= 0) return 1;
+            return 0;
+          });
+        const built: PlanDisplay[] = active.map((p) => {
+          const staticFallback = VPS_PLANS.find((s) => s.id === p.id);
+          const meta = STATIC_META[p.id] ?? FALLBACK_META;
+          return {
+            id: p.id,
+            name: p.name || staticFallback?.name || p.id,
+            cpu: p.cpu || staticFallback?.cpu || "",
+            ram: p.ram || staticFallback?.ram || "",
+            storage: p.storage || staticFallback?.storage || "",
+            bandwidth: p.bandwidth || staticFallback?.bandwidth || "",
+            price: p.price ?? staticFallback?.price ?? 0,
+            recommended: p.popular ?? staticFallback?.popular ?? meta.recommended,
+            tagline: meta.tagline,
+            features: meta.features,
+          };
         });
-        setPlans(buildPlans(prices, popular));
+        setPlans(built);
       })
-      .catch(() => setPlans(buildPlans({}, {})));
+      .catch(() => setPlans(buildStaticPlans()));
   }, []);
 
   return (
