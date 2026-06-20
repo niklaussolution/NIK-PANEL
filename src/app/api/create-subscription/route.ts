@@ -12,44 +12,46 @@ const razorpay = new Razorpay({
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { planId, planName, amount, userId, customerName, customerEmail, customerPhone, hostname } = body;
+    const {
+      planId, planName, amount,
+      userId, customerName, customerEmail, customerPhone,
+      os,
+      couponCode, couponDiscount,
+    } = body;
 
-    if (!planId || !amount || !userId || !customerName || !customerEmail || !customerPhone || !hostname) {
+    if (!planId || !amount || !userId || !customerName || !customerEmail || !customerPhone) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    if (!/^[a-zA-Z0-9-]+$/.test(hostname)) {
-      return NextResponse.json({ error: "Invalid hostname" }, { status: 400 });
-    }
-
-    // Step 1 — Create (or reuse) a Razorpay Plan for this VPS plan
+    // Step 1 — Create (or reuse) a Razorpay Plan for this amount
     const rzpPlanId = await getOrCreateRazorpayPlan(planId, planName, amount);
 
     // Step 2 — Create Razorpay Subscription (monthly, unlimited cycles)
     const subscription = await (razorpay.subscriptions as any).create({
       plan_id: rzpPlanId,
-      total_count: 120,          // max 10 years of monthly cycles
+      total_count: 120,       // max 10 years of monthly cycles
       quantity: 1,
-      customer_notify: 1,        // Razorpay sends payment reminders
-      notes: { planId, userId, hostname, customerName, customerEmail },
+      customer_notify: 1,
+      notes: { planId, userId, os: os || "", customerName, customerEmail },
     });
 
     // Step 3 — Save pending subscription to Firestore
     const db = getAdminDb();
-    const subRef = db.collection("subscriptions").doc(subscription.id);
-    await subRef.set({
+    await db.collection("subscriptions").doc(subscription.id).set({
       id: subscription.id,
       userId,
       planId,
       planName,
       amount,
-      hostname,
+      os: os || "",
       customerName,
       customerEmail,
       customerPhone,
+      ...(couponCode    ? { couponCode }    : {}),
+      ...(couponDiscount ? { couponDiscount } : {}),
       razorpaySubscriptionId: subscription.id,
       razorpayPlanId: rzpPlanId,
-      status: "created",           // created → authenticated → active → cancelled
+      status: "created",
       nextBillingAt: null,
       createdAt: new Date().toISOString(),
     });
@@ -68,7 +70,7 @@ async function getOrCreateRazorpayPlan(planId: string, planName: string, amount:
   const db = getAdminDb();
   const cachedDoc = await db.collection("razorpay_plans").doc(planId).get();
 
-  // Return cached plan ID if amount matches
+  // Return cached plan if amount matches
   if (cachedDoc.exists) {
     const cached = cachedDoc.data()!;
     if (cached.amount === amount) return cached.rzpPlanId as string;
@@ -80,14 +82,14 @@ async function getOrCreateRazorpayPlan(planId: string, planName: string, amount:
     interval: 1,
     item: {
       name: planName || `VPS Plan ${planId}`,
-      amount: amount * 100,
+      amount: amount * 100,   // Razorpay expects paise
       currency: "INR",
       description: `NIKPanel — ${planName} (monthly)`,
     },
     notes: { planId },
   });
 
-  // Cache it
+  // Cache it so we reuse the same Razorpay plan next time
   await db.collection("razorpay_plans").doc(planId).set({
     planId,
     rzpPlanId: rzpPlan.id,
