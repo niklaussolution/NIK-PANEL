@@ -108,7 +108,7 @@ export default function AdminDashboard() {
           <motion.div key={card.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
             <Link href={card.href} className="block bg-white rounded-[16px] border border-gray-100 shadow-card p-5 hover:shadow-card-hover transition-shadow">
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-10 h-10 ${card.bg} rounded-[10px] flex items-center justify-center`}>
+                <div className={`w-10 h-10 ${card.bg} rounded-full flex items-center justify-center`}>
                   <card.icon className={`w-5 h-5 ${card.color}`} />
                 </div>
               </div>
