@@ -47,7 +47,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
         <Link href="/">
-          <Image src={assets.icons.logo} alt="Niklaus Solution" width={120} height={48} className="h-8 w-auto" />
+          <Image src={assets.icons.logo} alt="Niklaus Solution" width={160} height={64} className="h-12 w-auto" />
         </Link>
       </div>
 

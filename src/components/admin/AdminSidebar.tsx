@@ -39,7 +39,7 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full">
       <div className="px-5 py-5 border-b border-gray-800">
         <Link href="/admin" className="flex flex-col gap-1.5">
-          <Image src={assets.icons.logo} alt="Niklaus Solution" width={120} height={48} className="h-8 w-auto brightness-0 invert" />
+          <Image src={assets.icons.logo} alt="Niklaus Solution" width={160} height={64} className="h-12 w-auto brightness-0 invert" />
           <div className="flex items-center gap-1">
             <Shield className="w-2.5 h-2.5 text-orange-400" />
             <span className="text-[10px] text-orange-400 font-semibold tracking-wide uppercase">Admin Panel</span>

@@ -15,9 +15,9 @@ export default function Footer() {
               <Image
                 src={assets.icons.logo}
                 alt="Niklaus Solution logo"
-                width={140}
-                height={56}
-                className="h-10 w-auto brightness-0 invert"
+                width={180}
+                height={72}
+                className="h-14 w-auto brightness-0 invert"
               />
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">

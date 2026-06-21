@@ -65,7 +65,7 @@ export default function LoginPage() {
           className="text-center mb-8"
         >
           <Link href="/">
-            <Image src={assets.icons.logo} alt="Niklaus Solution" width={140} height={56} className="h-10 w-auto mx-auto" />
+            <Image src={assets.icons.logo} alt="Niklaus Solution" width={200} height={80} className="h-16 w-auto mx-auto" />
           </Link>
         </motion.div>
 

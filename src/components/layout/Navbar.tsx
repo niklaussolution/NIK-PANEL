@@ -49,9 +49,9 @@ export default function Navbar() {
             <Image
               src={assets.icons.logo}
               alt="Niklaus Solution logo"
-              width={140}
-              height={56}
-              className="h-10 w-auto transition-transform duration-300 group-hover:scale-105"
+              width={180}
+              height={72}
+              className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
               priority
             />
           </Link>
