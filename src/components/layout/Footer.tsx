@@ -82,8 +82,6 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-2.5">
               {[
-                { href: "/contact", label: "Open Ticket" },
-                { href: "/login", label: "Client Area" },
                 { href: "/contact", label: "Contact Us" },
               ].map((link) => (
                 <li key={link.href}>
