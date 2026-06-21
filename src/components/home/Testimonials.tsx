@@ -40,7 +40,7 @@ export default function Testimonials() {
             Customer Stories
           </span>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
-            Loved by 50,000+ businesses
+            Loved by 500+ businesses
           </h2>
           <p className="mt-3 text-gray-500">
             Rated 4.9/5 across thousands of verified reviews.

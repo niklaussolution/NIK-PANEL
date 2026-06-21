@@ -5,7 +5,7 @@ import { Users, ShieldCheck, Globe2, Headphones } from "lucide-react";
 import Reveal from "@/components/animations/Reveal";
 
 const stats = [
-  { icon: Users, value: "50,000+", label: "Active customers" },
+  { icon: Users, value: "500+", label: "Active customers" },
   { icon: ShieldCheck, value: "99.9%", label: "Uptime guarantee" },
   { icon: Globe2, value: "12", label: "Global server locations" },
   { icon: Headphones, value: "24/7", label: "Expert support" },

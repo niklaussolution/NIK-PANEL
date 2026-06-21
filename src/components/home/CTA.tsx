@@ -35,7 +35,7 @@ export default function CTA() {
                 Ready to launch your project on NIKPanel?
               </h2>
               <p className="mt-4 text-base lg:text-lg text-gray-400 max-w-xl mx-auto">
-                Join 50,000+ businesses running faster, safer infrastructure on
+                Join 500+ businesses running faster, safer infrastructure on
                 a platform built for performance and reliability.
               </p>
 
