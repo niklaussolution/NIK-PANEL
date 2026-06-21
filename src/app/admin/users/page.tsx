@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Search, RefreshCw, Trash2, AlertTriangle } from "lucide-react";
+import { Users, Search, RefreshCw, Trash2, AlertTriangle, Pencil, Check, X } from "lucide-react";
 import Badge from "@/components/ui/Badge";
 import toast from "react-hot-toast";
 
@@ -44,6 +44,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
+  const [editPhone, setEditPhone] = useState<{ id: string; value: string } | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -56,6 +57,19 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => { fetchUsers(); }, []);
+
+  const handleSavePhone = async () => {
+    if (!editPhone) return;
+    try {
+      await updateDoc(doc(db, "users", editPhone.id), { phone: editPhone.value });
+      setUsers((prev) => prev.map((u) => u.id === editPhone.id ? { ...u, phone: editPhone.value } : u));
+      toast.success("Phone number updated");
+    } catch {
+      toast.error("Failed to update phone");
+    } finally {
+      setEditPhone(null);
+    }
+  };
 
   const handleDelete = async () => {
     if (!deleteTarget?.id) return;
@@ -137,7 +151,31 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="px-5 py-3.5 text-sm text-gray-600">{user.email}</td>
-                    <td className="px-5 py-3.5 text-sm text-gray-500">{user.phone || "—"}</td>
+                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                      {editPhone?.id === user.id ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            autoFocus
+                            value={editPhone.value}
+                            onChange={(e) => setEditPhone({ ...editPhone, value: e.target.value })}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleSavePhone(); if (e.key === "Escape") setEditPhone(null); }}
+                            className="w-32 px-2 py-1 text-xs border border-[#FF6B00] rounded-[6px] outline-none"
+                          />
+                          <button onClick={handleSavePhone} className="p-1 text-green-500 hover:bg-green-50 rounded"><Check className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => setEditPhone(null)} className="p-1 text-gray-400 hover:bg-gray-100 rounded"><X className="w-3.5 h-3.5" /></button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 group/phone">
+                          <span className={user.phone ? "" : "text-gray-300"}>{user.phone || "Not added"}</span>
+                          <button
+                            onClick={() => setEditPhone({ id: user.id!, value: user.phone || "" })}
+                            className="opacity-0 group-hover/phone:opacity-100 p-1 text-gray-300 hover:text-[#FF6B00] transition-all"
+                          >
+                            <Pencil className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </td>
                     <td className="px-5 py-3.5">
                       <Badge variant={user.role === "admin" ? "danger" : "neutral"}>{user.role || "user"}</Badge>
                     </td>

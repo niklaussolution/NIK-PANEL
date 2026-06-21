@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Order, VPS, Ticket } from "@/types";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
+import { Phone } from "lucide-react";
 
 interface StatCard {
   label: string;
@@ -90,6 +91,23 @@ export default function DashboardPage() {
           Here's what's happening with your hosting account.
         </p>
       </div>
+
+      {/* Phone number missing notice */}
+      {!loadingData && !userData?.phone && (
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+          className="mb-6 flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-[12px] px-4 py-3">
+          <div className="w-8 h-8 bg-[#FF6B00] rounded-full flex items-center justify-center flex-shrink-0">
+            <Phone className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900">Add your phone number</p>
+            <p className="text-xs text-gray-500 mt-0.5">Your profile is incomplete. Add a phone number so we can reach you about your services.</p>
+          </div>
+          <Link href="/dashboard/settings" className="flex-shrink-0 text-xs font-semibold text-[#FF6B00] border border-[#FF6B00]/30 px-3 py-1.5 rounded-[8px] hover:bg-orange-100 transition-colors whitespace-nowrap">
+            Add now
+          </Link>
+        </motion.div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
