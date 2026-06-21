@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Server, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { assets } from "@/lib/assets";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useAuth } from "@/context/AuthContext";
@@ -62,13 +64,8 @@ export default function LoginPage() {
           transition={{ duration: 0.4 }}
           className="text-center mb-8"
         >
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-9 h-9 bg-[#FF6B00] rounded-[10px] flex items-center justify-center">
-              <Server className="w-4.5 h-4.5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              NIK<span className="text-[#FF6B00]">Panel</span>
-            </span>
+          <Link href="/">
+            <Image src={assets.icons.logo} alt="Niklaus Solution" width={140} height={56} className="h-10 w-auto mx-auto" />
           </Link>
         </motion.div>
 

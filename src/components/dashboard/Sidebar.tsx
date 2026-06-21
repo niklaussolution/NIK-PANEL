@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -10,12 +11,12 @@ import {
   LifeBuoy,
   Settings,
   LogOut,
-  Server as ServerIcon,
   Menu,
   X,
   ChevronRight,
   ShoppingCart,
 } from "lucide-react";
+import { assets } from "@/lib/assets";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
@@ -45,13 +46,8 @@ export default function Sidebar() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="px-5 py-5 border-b border-gray-100">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#FF6B00] rounded-[7px] flex items-center justify-center">
-            <ServerIcon className="w-3.5 h-3.5 text-white" />
-          </div>
-          <span className="text-base font-bold text-gray-900">
-            NIK<span className="text-[#FF6B00]">Panel</span>
-          </span>
+        <Link href="/">
+          <Image src={assets.icons.logo} alt="Niklaus Solution" width={120} height={48} className="h-8 w-auto" />
         </Link>
       </div>
 

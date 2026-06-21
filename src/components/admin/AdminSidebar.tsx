@@ -2,12 +2,14 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
-  Package, LogOut, Server as ServerIcon,
+  Package, LogOut,
   Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
+import { assets } from "@/lib/assets";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
@@ -36,16 +38,11 @@ export default function AdminSidebar() {
   const Content = () => (
     <div className="flex flex-col h-full">
       <div className="px-5 py-5 border-b border-gray-800">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#FF6B00] rounded-[7px] flex items-center justify-center">
-            <ServerIcon className="w-3.5 h-3.5 text-white" />
-          </div>
-          <div>
-            <span className="text-sm font-bold text-white">NIK<span className="text-[#FF6B00]">Panel</span></span>
-            <div className="flex items-center gap-1 mt-0.5">
-              <Shield className="w-2.5 h-2.5 text-orange-400" />
-              <span className="text-[10px] text-orange-400 font-semibold tracking-wide uppercase">Admin</span>
-            </div>
+        <Link href="/admin" className="flex flex-col gap-1.5">
+          <Image src={assets.icons.logo} alt="Niklaus Solution" width={120} height={48} className="h-8 w-auto brightness-0 invert" />
+          <div className="flex items-center gap-1">
+            <Shield className="w-2.5 h-2.5 text-orange-400" />
+            <span className="text-[10px] text-orange-400 font-semibold tracking-wide uppercase">Admin Panel</span>
           </div>
         </Link>
       </div>
