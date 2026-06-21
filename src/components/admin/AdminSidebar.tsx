@@ -39,8 +39,8 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full">
       <div className="px-5 py-5 border-b border-gray-800">
         <Link href="/admin" className="flex flex-col gap-1.5">
-          <div className="bg-white rounded-[10px] px-2 py-1 inline-block">
-            <Image src={assets.icons.logo} alt="Niklaus Solution" width={160} height={64} className="h-10 w-auto" />
+          <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+            <Image src={assets.icons.logo} alt="Niklaus Solution" width={48} height={48} className="w-10 h-10 object-contain" />
           </div>
           <div className="flex items-center gap-1">
             <Shield className="w-2.5 h-2.5 text-orange-400" />
