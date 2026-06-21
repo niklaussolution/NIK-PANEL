@@ -142,7 +142,15 @@ export default function AdminUsersPage() {
                       <Badge variant={user.role === "admin" ? "danger" : "neutral"}>{user.role || "user"}</Badge>
                     </td>
                     <td className="px-5 py-3.5 text-xs text-gray-400">
-                      {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
+                      {user.createdAt
+                        ? (() => {
+                            const v = user.createdAt as unknown;
+                            const d = v && typeof v === "object" && "toDate" in v
+                              ? (v as { toDate: () => Date }).toDate()
+                              : new Date(user.createdAt as string);
+                            return isNaN(d.getTime()) ? "—" : d.toLocaleDateString();
+                          })()
+                        : "—"}
                     </td>
                     <td className="px-5 py-3.5">
                       <button
