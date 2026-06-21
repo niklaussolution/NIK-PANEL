@@ -41,7 +41,6 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {[
                 { href: "/plans", label: "Starter VPS" },
-                { href: "/plans", label: "Business VPS" },
                 { href: "/plans", label: "Professional VPS" },
                 { href: "/plans", label: "Enterprise VPS" },
               ].map((link) => (
@@ -83,7 +82,7 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4">Support</h3>
             <ul className="space-y-2.5">
               {[
-                { href: "/dashboard/support", label: "Open Ticket" },
+                { href: "/contact", label: "Open Ticket" },
                 { href: "/login", label: "Client Area" },
                 { href: "/contact", label: "Contact Us" },
               ].map((link) => (
