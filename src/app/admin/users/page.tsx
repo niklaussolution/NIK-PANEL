@@ -1,29 +1,74 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { User } from "@/types";
-import { motion } from "framer-motion";
-import { Users, Search, RefreshCw } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Users, Search, RefreshCw, Trash2, AlertTriangle } from "lucide-react";
 import Badge from "@/components/ui/Badge";
+import toast from "react-hot-toast";
+
+function DeleteModal({ name, onCancel, onConfirm }: { name: string; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onCancel}>
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-[20px] w-full max-w-sm p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-6 h-6 text-red-500" />
+        </div>
+        <h3 className="text-base font-bold text-center text-gray-900 mb-1">Delete User?</h3>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          This will permanently remove <strong>{name}</strong> from the database. This cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel}
+            className="flex-1 py-2.5 rounded-[10px] border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-[10px] bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+            <Trash2 className="w-4 h-4" /> Delete
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<User | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const snap = await getDocs(collection(db, "users"));
-      setUsers(snap.docs.map((d) => d.data() as User));
+      setUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() } as User)));
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => { fetchUsers(); }, []);
+
+  const handleDelete = async () => {
+    if (!deleteTarget?.id) return;
+    try {
+      await deleteDoc(doc(db, "users", deleteTarget.id));
+      setUsers((prev) => prev.filter((u) => u.id !== deleteTarget.id));
+      toast.success(`${deleteTarget.name || "User"} deleted`);
+    } catch {
+      toast.error("Failed to delete user");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const filtered = users.filter((u) =>
     u.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -32,6 +77,16 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-6 lg:p-8 max-w-6xl">
+      <AnimatePresence>
+        {deleteTarget && (
+          <DeleteModal
+            name={deleteTarget.name || deleteTarget.email || "this user"}
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={handleDelete}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
@@ -65,14 +120,14 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50">
-                  {["User", "Email", "Phone", "Role", "Joined"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+                  {["User", "Email", "Phone", "Role", "Joined", ""].map((h, i) => (
+                    <th key={i} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={user.id} className="hover:bg-gray-50/50 transition-colors group">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-[#FF6B00] rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
@@ -88,6 +143,15 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-5 py-3.5 text-xs text-gray-400">
                       {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <button
+                        onClick={() => setDeleteTarget(user)}
+                        className="opacity-0 group-hover:opacity-100 p-1.5 rounded-[7px] text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+                        title="Delete user"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </td>
                   </tr>
                 ))}

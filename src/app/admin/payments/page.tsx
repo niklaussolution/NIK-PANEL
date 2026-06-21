@@ -8,7 +8,7 @@ import {
   Server, User, Mail, Phone, Calendar, CreditCard, Hash, X as XIcon,
 } from "lucide-react";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, deleteDoc, doc } from "firebase/firestore";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -211,8 +211,39 @@ function ClearConfirmModal({ onClose, onConfirm, loading }: {
   );
 }
 
+// ── Delete confirm modal ──────────────────────────────────────────────────────
+function DeleteModal({ name, onCancel, onConfirm }: { name: string; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onCancel}>
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-[20px] w-full max-w-sm p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-6 h-6 text-red-500" />
+        </div>
+        <h3 className="text-base font-bold text-center text-gray-900 mb-1">Delete Payment?</h3>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          This will permanently remove the payment record for <strong>{name}</strong>. This cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel}
+            className="flex-1 py-2.5 rounded-[10px] border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-[10px] bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+            <Trash2 className="w-4 h-4" /> Delete
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Order row ─────────────────────────────────────────────────────────────────
-function OrderRow({ order, onView }: { order: RazorpayOrder; onView: (o: RazorpayOrder) => void }) {
+function OrderRow({ order, onView, onDelete }: { order: RazorpayOrder; onView: (o: RazorpayOrder) => void; onDelete: (o: RazorpayOrder) => void }) {
   return (
     <div className="bg-white rounded-[14px] border border-gray-100 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 hover:border-gray-200 transition-colors">
       <div className="flex-1 min-w-0">
@@ -240,12 +271,21 @@ function OrderRow({ order, onView }: { order: RazorpayOrder; onView: (o: Razorpa
         )}
       </div>
 
-      <button
-        onClick={() => onView(order)}
-        className="shrink-0 text-xs font-medium text-[#0066FF] border border-blue-100 px-3 py-1.5 rounded-[8px] hover:bg-blue-50 transition-colors flex items-center gap-1"
-      >
-        <Eye className="w-3.5 h-3.5" /> Full Details
-      </button>
+      <div className="flex items-center gap-2 shrink-0">
+        <button
+          onClick={() => onView(order)}
+          className="text-xs font-medium text-[#0066FF] border border-blue-100 px-3 py-1.5 rounded-[8px] hover:bg-blue-50 transition-colors flex items-center gap-1"
+        >
+          <Eye className="w-3.5 h-3.5" /> Full Details
+        </button>
+        <button
+          onClick={() => onDelete(order)}
+          className="p-1.5 rounded-[8px] text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all"
+          title="Delete"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -287,9 +327,10 @@ export default function AdminPaymentsPage() {
   const [filter, setFilter]       = useState<"all" | "paid" | "pending">("all");
   const [dateRange, setDateRange] = useState<DateRange>("all");
   const [customDate, setCustomDate] = useState({ from: "", to: "" });
-  const [selected, setSelected]   = useState<RazorpayOrder | null>(null);
-  const [showClear, setShowClear] = useState(false);
-  const [clearing, setClearing]   = useState(false);
+  const [selected, setSelected]       = useState<RazorpayOrder | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<RazorpayOrder | null>(null);
+  const [showClear, setShowClear]     = useState(false);
+  const [clearing, setClearing]       = useState(false);
 
   useEffect(() => {
     let q;
@@ -312,6 +353,18 @@ export default function AdminPaymentsPage() {
     });
     return () => unsub();
   }, []);
+
+  const handleDelete = async () => {
+    if (!deleteTarget?.id) return;
+    try {
+      await deleteDoc(doc(db, "orders", deleteTarget.id));
+      toast.success("Payment record deleted");
+    } catch {
+      toast.error("Failed to delete");
+    } finally {
+      setDeleteTarget(null);
+    }
+  };
 
   const handleClearAll = async () => {
     setClearing(true);
@@ -356,7 +409,14 @@ export default function AdminPaymentsPage() {
   return (
     <div className="p-6 sm:p-8">
       <AnimatePresence>
-        {selected  && <DetailModal key="detail" order={selected} onClose={() => setSelected(null)} />}
+        {selected      && <DetailModal key="detail" order={selected} onClose={() => setSelected(null)} />}
+        {deleteTarget  && (
+          <DeleteModal key="delete"
+            name={deleteTarget.customerName || deleteTarget.customerEmail}
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={handleDelete}
+          />
+        )}
         {showClear && (
           <ClearConfirmModal key="clear"
             onClose={() => setShowClear(false)}
@@ -479,7 +539,7 @@ export default function AdminPaymentsPage() {
         ) : (
           <div className="space-y-3">
             {visible.map((order) => (
-              <OrderRow key={order.id} order={order} onView={setSelected} />
+              <OrderRow key={order.id} order={order} onView={setSelected} onDelete={setDeleteTarget} />
             ))}
           </div>
         )}
