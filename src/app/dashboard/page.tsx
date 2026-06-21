@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Order, VPS, Ticket } from "@/types";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
+import Commands from "@/components/home/Commands";
 
 interface StatCard {
   label: string;
@@ -206,6 +207,8 @@ export default function DashboardPage() {
           )}
         </motion.div>
       </div>
+
+      <Commands />
     </div>
   );
 }

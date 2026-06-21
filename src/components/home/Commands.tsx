@@ -34,61 +34,46 @@ export default function Commands() {
   if (commands.length === 0) return null;
 
   return (
-    <section className="py-20 bg-gray-950">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FF6B00]/10 border border-[#FF6B00]/20 text-[#FF6B00] text-xs font-semibold uppercase tracking-wider mb-4">
-            <Terminal className="w-3.5 h-3.5" />
-            Quick Commands
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-            Manage your VPS in seconds
-          </h2>
-          <p className="mt-3 text-gray-400 max-w-xl mx-auto text-sm">
-            Copy and run these commands directly on your server to get things done fast.
-          </p>
-        </motion.div>
-
-        <div className="space-y-3">
-          {commands.map((cmd, i) => (
-            <motion.div
-              key={cmd.id}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.06 }}
-              className="group bg-gray-900 border border-gray-800 rounded-[14px] px-5 py-4 flex items-center gap-4 hover:border-gray-700 transition-colors"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold text-[#FF6B00] uppercase tracking-wide">{cmd.label}</span>
-                </div>
-                <code className="text-sm text-green-400 font-mono break-all">{cmd.command}</code>
-                {cmd.description && (
-                  <p className="text-xs text-gray-500 mt-1">{cmd.description}</p>
-                )}
-              </div>
-              <button
-                onClick={() => copy(cmd.id, cmd.command)}
-                className="flex-shrink-0 w-8 h-8 rounded-[8px] bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 hover:text-white transition-all"
-                title="Copy command"
-              >
-                {copied === cmd.id ? (
-                  <Check className="w-3.5 h-3.5 text-green-400" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-            </motion.div>
-          ))}
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.45 }}
+      className="bg-white rounded-[16px] border border-gray-100 shadow-card mt-6"
+    >
+      <div className="flex items-center gap-2 px-6 py-4 border-b border-gray-50">
+        <Terminal className="w-4 h-4 text-[#FF6B00]" />
+        <h2 className="text-sm font-semibold text-gray-900">Quick Commands</h2>
       </div>
-    </section>
+      <div className="divide-y divide-gray-50">
+        {commands.map((cmd, i) => (
+          <motion.div
+            key={cmd.id}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 + i * 0.05 }}
+            className="flex items-center gap-4 px-6 py-3.5 hover:bg-gray-50 transition-colors group"
+          >
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-semibold text-[#FF6B00] uppercase tracking-wide">{cmd.label}</span>
+              <code className="block text-sm text-gray-700 font-mono truncate mt-0.5">{cmd.command}</code>
+              {cmd.description && (
+                <p className="text-xs text-gray-400 mt-0.5">{cmd.description}</p>
+              )}
+            </div>
+            <button
+              onClick={() => copy(cmd.id, cmd.command)}
+              className="flex-shrink-0 w-7 h-7 rounded-[7px] bg-gray-100 hover:bg-orange-50 flex items-center justify-center text-gray-400 hover:text-[#FF6B00] transition-all opacity-0 group-hover:opacity-100"
+              title="Copy"
+            >
+              {copied === cmd.id ? (
+                <Check className="w-3.5 h-3.5 text-green-500" />
+              ) : (
+                <Copy className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
