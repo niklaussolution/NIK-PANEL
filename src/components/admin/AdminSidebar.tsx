@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
-  Package, LogOut, Terminal,
+  Package, LogOut,
   Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
 import { assets } from "@/lib/assets";
@@ -21,7 +21,6 @@ const navItems = [
   { href: "/admin/orders",   label: "Orders",       icon: ShoppingCart },
   { href: "/admin/vps",      label: "VPS Mgmt",     icon: Server },
   { href: "/admin/plans",    label: "Plans",        icon: Package },
-  { href: "/admin/commands", label: "Commands",     icon: Terminal },
 ];
 
 export default function AdminSidebar() {
@@ -40,7 +39,9 @@ export default function AdminSidebar() {
     <div className="flex flex-col h-full">
       <div className="px-5 py-5 border-b border-gray-800">
         <Link href="/admin" className="flex flex-col gap-1.5">
-          <Image src={assets.icons.logo} alt="Niklaus Solution" width={160} height={64} className="h-12 w-auto brightness-0 invert" />
+          <div className="bg-white rounded-[10px] px-2 py-1 inline-block">
+            <Image src={assets.icons.logo} alt="Niklaus Solution" width={160} height={64} className="h-10 w-auto" />
+          </div>
           <div className="flex items-center gap-1">
             <Shield className="w-2.5 h-2.5 text-orange-400" />
             <span className="text-[10px] text-orange-400 font-semibold tracking-wide uppercase">Admin Panel</span>

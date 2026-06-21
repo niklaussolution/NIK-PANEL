@@ -12,13 +12,15 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/">
-              <Image
-                src={assets.icons.logo}
-                alt="Niklaus Solution logo"
-                width={180}
-                height={72}
-                className="h-14 w-auto brightness-0 invert"
-              />
+              <div className="bg-white rounded-[10px] px-2 py-1 inline-block">
+                <Image
+                  src={assets.icons.logo}
+                  alt="Niklaus Solution logo"
+                  width={180}
+                  height={72}
+                  className="h-12 w-auto"
+                />
+              </div>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               High-performance KVM VPS hosting with CyberPanel and Docker pre-installed. Built for developers and businesses.
