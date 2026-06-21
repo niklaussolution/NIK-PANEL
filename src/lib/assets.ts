@@ -8,7 +8,7 @@ const BASE = "/assets";
 
 export const assets = {
   icons: {
-    logo: `${BASE}/icons/logo.svg`,
+    logo: `${BASE}/icons/logo.png`,
   },
   illustrations: {
     vpsServers: `${BASE}/illustrations/vps-servers.svg`,
