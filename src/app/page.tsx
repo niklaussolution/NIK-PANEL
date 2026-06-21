@@ -6,6 +6,7 @@ import VPSPlans from "@/components/home/VPSPlans";
 import Features from "@/components/home/Features";
 import DashboardPreview from "@/components/home/DashboardPreviewWrapper";
 import Testimonials from "@/components/home/Testimonials";
+import Commands from "@/components/home/Commands";
 import FAQ from "@/components/home/FAQ";
 import CTA from "@/components/home/CTA";
 
@@ -20,6 +21,7 @@ export default function HomePage() {
         <Features />
         <DashboardPreview />
         <Testimonials />
+        <Commands />
         <FAQ />
         <CTA />
       </main>

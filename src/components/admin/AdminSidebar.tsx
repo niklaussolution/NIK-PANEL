@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
-  Package, LogOut,
+  Package, LogOut, Terminal,
   Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
 import { assets } from "@/lib/assets";
@@ -21,6 +21,7 @@ const navItems = [
   { href: "/admin/orders",   label: "Orders",       icon: ShoppingCart },
   { href: "/admin/vps",      label: "VPS Mgmt",     icon: Server },
   { href: "/admin/plans",    label: "Plans",        icon: Package },
+  { href: "/admin/commands", label: "Commands",     icon: Terminal },
 ];
 
 export default function AdminSidebar() {
