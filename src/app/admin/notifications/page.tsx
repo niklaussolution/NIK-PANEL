@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import {
   collection, onSnapshot, orderBy, query,
-  updateDoc, doc, writeBatch,
+  updateDoc, doc, writeBatch, deleteDoc, getDocs,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Bell, ShoppingCart, CheckCircle2, Mail, Phone,
-  IndianRupee, Check, CheckCheck, User,
+  IndianRupee, Check, CheckCheck, User, Trash2, AlertTriangle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -36,9 +36,37 @@ function fmt(iso: string) {
   });
 }
 
+function ClearAllModal({ count, onCancel, onConfirm }: { count: number; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onCancel}>
+      <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+        className="bg-white rounded-[20px] w-full max-w-sm p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-6 h-6 text-red-500" />
+        </div>
+        <h3 className="text-base font-bold text-center text-gray-900 mb-1">Clear All Notifications?</h3>
+        <p className="text-sm text-gray-500 text-center mb-6">
+          This will permanently delete all <strong>{count}</strong> notification{count !== 1 ? "s" : ""}. Cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel}
+            className="flex-1 py-2.5 rounded-[10px] border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button onClick={onConfirm}
+            className="flex-1 py-2.5 rounded-[10px] bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors flex items-center justify-center gap-2">
+            <Trash2 className="w-4 h-4" /> Clear All
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 export default function AdminNotificationsPage() {
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showClearModal, setShowClearModal] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
@@ -50,13 +78,10 @@ export default function AdminNotificationsPage() {
       },
       (err) => {
         console.error("Notifications snapshot error:", err);
-        // Fallback: try without orderBy (no index needed)
-        import("firebase/firestore").then(({ getDocs }) => {
-          getDocs(collection(db, "notifications")).then((snap) => {
-            const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification));
-            setNotifs(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-          }).finally(() => setLoading(false));
-        });
+        getDocs(collection(db, "notifications")).then((snap) => {
+          const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification));
+          setNotifs(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+        }).finally(() => setLoading(false));
       }
     );
   }, []);
@@ -74,10 +99,38 @@ export default function AdminNotificationsPage() {
     toast.success("All marked as read");
   };
 
+  const deleteOne = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, "notifications", id));
+      toast.success("Notification deleted");
+    } catch {
+      toast.error("Failed to delete");
+    }
+  };
+
+  const clearAll = async () => {
+    try {
+      const batch = writeBatch(db);
+      notifs.forEach((n) => batch.delete(doc(db, "notifications", n.id)));
+      await batch.commit();
+      toast.success("All notifications cleared");
+    } catch {
+      toast.error("Failed to clear notifications");
+    } finally {
+      setShowClearModal(false);
+    }
+  };
+
   const unreadCount = notifs.filter((n) => !n.read).length;
 
   return (
     <div className="p-6 lg:p-8 max-w-3xl">
+      <AnimatePresence>
+        {showClearModal && (
+          <ClearAllModal count={notifs.length} onCancel={() => setShowClearModal(false)} onConfirm={clearAll} />
+        )}
+      </AnimatePresence>
+
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
@@ -85,11 +138,19 @@ export default function AdminNotificationsPage() {
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </p>
         </div>
-        {unreadCount > 0 && (
-          <button onClick={markAllRead}
-            className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 border border-gray-200 px-3 py-2 rounded-[10px] hover:bg-gray-50 transition-colors">
-            <CheckCheck className="w-3.5 h-3.5" /> Mark all read
-          </button>
+        {notifs.length > 0 && (
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <button onClick={markAllRead}
+                className="flex items-center gap-1.5 text-xs font-semibold text-gray-600 border border-gray-200 px-3 py-2 rounded-[10px] hover:bg-gray-50 transition-colors">
+                <CheckCheck className="w-3.5 h-3.5" /> Mark all read
+              </button>
+            )}
+            <button onClick={() => setShowClearModal(true)}
+              className="flex items-center gap-1.5 text-xs font-semibold text-red-500 border border-red-200 px-3 py-2 rounded-[10px] hover:bg-red-50 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" /> Clear all
+            </button>
+          </div>
         )}
       </div>
 
@@ -108,7 +169,8 @@ export default function AdminNotificationsPage() {
             {notifs.map((n) => (
               <motion.div key={n.id}
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                className={`bg-white rounded-[14px] border shadow-sm p-4 flex gap-4 transition-colors ${n.read ? "border-gray-100" : "border-[#FF6B00]/30 bg-orange-50/30"}`}
+                exit={{ opacity: 0, x: 40, transition: { duration: 0.2 } }}
+                className={`bg-white rounded-[14px] border shadow-sm p-4 flex gap-4 transition-colors group ${n.read ? "border-gray-100" : "border-[#FF6B00]/30 bg-orange-50/30"}`}
               >
                 {/* Icon */}
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${n.type === "payment_success" ? "bg-green-100" : "bg-orange-100"}`}>
@@ -126,13 +188,20 @@ export default function AdminNotificationsPage() {
                       </span>
                       <p className="text-xs text-gray-400 mt-0.5">{fmt(n.createdAt)}</p>
                     </div>
-                    {!n.read && (
-                      <button onClick={() => markRead(n.id)}
-                        className="flex-shrink-0 p-1.5 rounded-[7px] text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
-                        title="Mark as read">
-                        <Check className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      {!n.read && (
+                        <button onClick={() => markRead(n.id)}
+                          className="p-1.5 rounded-[7px] text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+                          title="Mark as read">
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button onClick={() => deleteOne(n.id)}
+                        className="p-1.5 rounded-[7px] text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Delete">
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
-                    )}
+                    </div>
                   </div>
 
                   {/* Customer details */}
