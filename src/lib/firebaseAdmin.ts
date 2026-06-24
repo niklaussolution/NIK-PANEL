@@ -24,6 +24,10 @@ export function getAdminAuth() {
   return getAdminApp().auth();
 }
 
+export function getAdminMessaging() {
+  return getAdminApp().messaging();
+}
+
 // Legacy named exports — call getAdminApp lazily so the module can be imported
 // at build time without crashing when env vars are missing/placeholder.
 export const adminDb = new Proxy({} as admin.firestore.Firestore, {

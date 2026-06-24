@@ -9,8 +9,9 @@ import {
   Package, LogOut, Bell,
   Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, query, where, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { requestPushPermissionAndGetToken, onForegroundMessage } from "@/lib/fcm";
 import { assets } from "@/lib/assets";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
@@ -33,9 +34,31 @@ export default function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
+  // Real-time unread badge
   useEffect(() => {
     const q = query(collection(db, "notifications"), where("read", "==", false));
     return onSnapshot(q, (snap) => setUnreadCount(snap.size));
+  }, []);
+
+  // Register FCM push token for this admin browser
+  useEffect(() => {
+    let unsub: (() => void) | undefined;
+    requestPushPermissionAndGetToken().then(async (token) => {
+      if (!token) return;
+      // Save token keyed by itself so duplicate tabs don't create duplicates
+      await setDoc(doc(db, "admin_fcm_tokens", token), {
+        token,
+        updatedAt: serverTimestamp(),
+      }, { merge: true });
+
+      // Show foreground toast when a push arrives while tab is open
+      unsub = onForegroundMessage((payload) => {
+        const title = payload.notification?.title || "NIKPanel";
+        const body = payload.notification?.body || "";
+        toast(`🔔 ${title}${body ? ` — ${body}` : ""}`, { duration: 6000 });
+      });
+    });
+    return () => { if (unsub) unsub(); };
   }, []);
 
   const handleLogout = async () => {

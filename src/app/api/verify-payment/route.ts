@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { getAdminDb } from "@/lib/firebaseAdmin";
+import { getAdminDb, getAdminMessaging } from "@/lib/firebaseAdmin";
 
 export async function POST(req: NextRequest) {
   try {
@@ -115,6 +115,28 @@ export async function POST(req: NextRequest) {
       read:          false,
       createdAt:     new Date().toISOString(),
     });
+
+    // Send FCM push to all registered admin browsers/devices
+    try {
+      const tokensSnap = await db.collection("admin_fcm_tokens").get();
+      const tokens = tokensSnap.docs.map((d) => d.data().token as string).filter(Boolean);
+      if (tokens.length > 0) {
+        const messaging = getAdminMessaging();
+        await messaging.sendEachForMulticast({
+          tokens,
+          notification: {
+            title: "Payment Confirmed!",
+            body: `${customerName} paid ₹${amount} for ${planName || planId}`,
+          },
+          webpush: {
+            notification: { icon: "https://panel.niklaussolution.com/assets/icons/logo.png" },
+            fcmOptions: { link: "https://panel.niklaussolution.com/admin/notifications" },
+          },
+        });
+      }
+    } catch (pushErr) {
+      console.error("FCM push error (non-fatal):", pushErr);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {

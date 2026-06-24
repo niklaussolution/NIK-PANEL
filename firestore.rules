@@ -86,6 +86,11 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Admin FCM push tokens — admin only
+    match /admin_fcm_tokens/{tokenId} {
+      allow read, write: if isAdmin();
+    }
+
     // Notifications — admin reads all, users read own
     match /notifications/{notificationId} {
       allow read: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
