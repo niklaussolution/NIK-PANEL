@@ -54,6 +54,23 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString(),
     });
 
+    // Notify admin — new purchase attempt
+    const notifRef = db.collection("notifications").doc();
+    await notifRef.set({
+      id:            notifRef.id,
+      type:          "new_order",
+      userId,
+      customerName,
+      customerEmail,
+      customerPhone,
+      planName:      planName || planId,
+      amount,
+      orderId:       orderRef.id,
+      razorpayOrderId: razorpayOrder.id,
+      read:          false,
+      createdAt:     new Date().toISOString(),
+    });
+
     return NextResponse.json({
       orderId:  razorpayOrder.id,
       amount:   razorpayOrder.amount,

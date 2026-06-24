@@ -1,26 +1,29 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Users, ShoppingCart, Server,
-  Package, LogOut,
+  Package, LogOut, Bell,
   Menu, X, ChevronRight, Shield, CreditCard,
 } from "lucide-react";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { assets } from "@/lib/assets";
 import { clsx } from "clsx";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
 
 const navItems = [
-  { href: "/admin",          label: "Dashboard",   icon: LayoutDashboard },
-  { href: "/admin/users",    label: "Users",        icon: Users },
-  { href: "/admin/payments", label: "Payments",     icon: CreditCard },
-  { href: "/admin/orders",   label: "Orders",       icon: ShoppingCart },
-  { href: "/admin/vps",      label: "VPS Mgmt",     icon: Server },
-  { href: "/admin/plans",    label: "Plans",        icon: Package },
+  { href: "/admin",                label: "Dashboard",     icon: LayoutDashboard },
+  { href: "/admin/users",          label: "Users",          icon: Users },
+  { href: "/admin/payments",       label: "Payments",       icon: CreditCard },
+  { href: "/admin/orders",         label: "Orders",         icon: ShoppingCart },
+  { href: "/admin/vps",            label: "VPS Mgmt",       icon: Server },
+  { href: "/admin/plans",          label: "Plans",          icon: Package },
+  { href: "/admin/notifications",  label: "Notifications",  icon: Bell },
 ];
 
 export default function AdminSidebar() {
@@ -28,6 +31,12 @@ export default function AdminSidebar() {
   const router = useRouter();
   const { logout, userData, currentUser } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const q = query(collection(db, "notifications"), where("read", "==", false));
+    return onSnapshot(q, (snap) => setUnreadCount(snap.size));
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -52,6 +61,7 @@ export default function AdminSidebar() {
       <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+          const isNotif = item.href === "/admin/notifications";
           return (
             <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}
               className={clsx(
@@ -59,8 +69,13 @@ export default function AdminSidebar() {
                 active ? "bg-[#FF6B00]/15 text-[#FF6B00]" : "text-gray-400 hover:bg-white/5 hover:text-white"
               )}>
               <item.icon className={clsx("w-4 h-4 flex-shrink-0", active ? "text-[#FF6B00]" : "text-gray-500 group-hover:text-gray-300")} />
-              {item.label}
-              {active && <ChevronRight className="w-3.5 h-3.5 text-[#FF6B00] ml-auto" />}
+              <span className="flex-1">{item.label}</span>
+              {isNotif && unreadCount > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1 bg-[#FF6B00] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+              {active && !isNotif && <ChevronRight className="w-3.5 h-3.5 text-[#FF6B00] ml-auto" />}
             </Link>
           );
         })}

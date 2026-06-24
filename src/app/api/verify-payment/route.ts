@@ -99,6 +99,23 @@ export async function POST(req: NextRequest) {
 
     await batch.commit();
 
+    // Notify admin — payment confirmed
+    const notifRef = db.collection("notifications").doc();
+    await notifRef.set({
+      id:            notifRef.id,
+      type:          "payment_success",
+      userId,
+      customerName,
+      customerEmail,
+      customerPhone,
+      planName:      planName || planId,
+      amount,
+      razorpayPaymentId: razorpay_payment_id,
+      razorpayOrderId:   razorpay_order_id,
+      read:          false,
+      createdAt:     new Date().toISOString(),
+    });
+
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("Verify payment error:", err);
