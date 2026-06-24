@@ -42,10 +42,23 @@ export default function AdminNotificationsPage() {
 
   useEffect(() => {
     const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
-    return onSnapshot(q, (snap) => {
-      setNotifs(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification)));
-      setLoading(false);
-    });
+    return onSnapshot(
+      q,
+      (snap) => {
+        setNotifs(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification)));
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Notifications snapshot error:", err);
+        // Fallback: try without orderBy (no index needed)
+        import("firebase/firestore").then(({ getDocs }) => {
+          getDocs(collection(db, "notifications")).then((snap) => {
+            const data = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Notification));
+            setNotifs(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+          }).finally(() => setLoading(false));
+        });
+      }
+    );
   }, []);
 
   const markRead = async (id: string) => {
